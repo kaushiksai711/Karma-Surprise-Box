@@ -1,52 +1,16 @@
-condition,label,reward_score,reason,box_type,rarity
-"login_streak >= 4 and posts_created >= 1 and comments_written >= 3 and upvotes_received >= 10",1,15,"Engagement streak + high upvotes","mystery","rare"
-"login_streak >= 2 and karma_earned_today >= 40 and posts_created >= 1",1,12,"Productive new contributor","starter","uncommon"
-"login_streak >= 7 and buddies_messaged >= 5 and karma_spent >= 30",1,20,"Social generosity champion","altruist","rare"
-"posts_created >= 3 and upvotes_received >= 15 and comments_written >= 2",1,18,"Quality content creator","creator","rare"
-"login_streak >= 10 and quizzes_completed >= 3 and karma_earned_today >= 25",1,22,"Dedicated knowledge seeker","scholar","rare"
-"upvotes_received >= 25 and posts_created == 1",1,20,"Viral single post","influencer","rare"
-"comments_written >= 8 and upvotes_received >= 12",1,16,"Insightful commenter","engagement","uncommon"
-"login_streak >= 3 and karma_spent >= 50 and buddies_messaged >= 1",1,15,"Generous community member","altruist","uncommon"
-"posts_created >= 4 and upvotes_received <= 4",0,0,"Low engagement content","none","none"
-"login_streak == 1 and posts_created >= 3 and upvotes_received >= 8",1,12,"Impressive comeback","comeback","uncommon"
-"quizzes_completed >= 4 and karma_earned_today >= 20",1,18,"Quiz master","scholar","rare"
-"login_streak >= 5 and karma_spent >= 25 and comments_written >= 3",1,15,"Active supportive engagement","engagement","uncommon"
-"buddies_messaged >= 8 and comments_written >= 2",1,14,"Social connector","social","uncommon"
-"login_streak >= 15 and posts_created >= 1 and quizzes_completed >= 1",1,25,"Long-term loyal contributor","veteran","epic"
-"posts_created >= 2 and upvotes_received >= 30 and comments_written >= 5",1,30,"Community thought leader","influencer","epic"
-"karma_spent >= 75 and buddies_messaged >= 2",1,20,"Ultimate generosity","altruist","rare"
-"login_streak <= 2 and karma_earned_today <= 10 and posts_created == 0",0,0,"Minimal participation","none","none"
-"login_streak >= 5 and posts_created >= 2 and upvotes_received >= 10",1,18,"Consistent quality contributor","engagement","rare"
-"comments_written >= 10 and buddies_messaged >= 3",1,14,"Conversational networker","social","uncommon"
-"login_streak >= 4 and quizzes_completed >= 2 and karma_earned_today >= 30",1,16,"Knowledge growth streak","scholar","uncommon"
-"karma_earned_today >= 100 and posts_created >= 1",1,25,"Exceptional daily impact","mystery","epic"
-"posts_created == 1 and upvotes_received >= 15 and comments_written >= 5",1,18,"Quality over quantity","creator","rare"
-"login_streak >= 6 and buddies_messaged >= 4 and comments_written >= 4",1,17,"Social engagement pro","social","rare"
-"upvotes_received >= 40 and karma_earned_today >= 60",1,35,"Community superstar","influencer","epic"
-"login_streak >= 8 and posts_created == 0 and comments_written == 0",0,0,"Ghost presence","none","none"
-"quizzes_completed >= 5 and login_streak >= 3",1,20,"Quiz dedication","scholar","rare"
-"karma_spent >= 40 and buddies_messaged >= 1 and posts_created >= 1",1,16,"Generous all-rounder","altruist","uncommon"
-"login_streak >= 25",1,30,"Extraordinary commitment","veteran","epic"
-"posts_created >= 5 and upvotes_received >= 8 and karma_earned_today >= 40",1,25,"Content creation machine","creator","epic"
-"comments_written >= 15 and upvotes_received >= 5",1,15,"Conversation catalyst","engagement","uncommon"
-"login_streak >= 3 and karma_earned_today <= 5 and posts_created == 0",0,0,"Passive observer","none","none"
-"buddies_messaged >= 10 and karma_spent >= 20",1,18,"Ultimate networker","social","rare"
-"login_streak >= 5 and posts_created >= 1 and comments_written >= 5 and quizzes_completed >= 1",1,20,"Complete community citizen","mystery","rare"
-"karma_earned_today >= 75 and login_streak >= 2",1,22,"Rapid rising star","meteor","rare"
-"posts_created >= 3 and comments_written >= 10",1,16,"Content and conversation balance","creator","uncommon"
-"login_streak >= 4 and quizzes_completed >= 3",1,14,"Learning streak","scholar","uncommon"
-"upvotes_received >= 20 and comments_written >= 3 and login_streak >= 2",1,20,"Respected voice","influencer","rare"
-"karma_spent >= 60 and posts_created >= 2",1,18,"Creator who gives back","altruist","rare"
-"login_streak >= 5 and buddies_messaged >= 3 and karma_earned_today >= 25",1,15,"Social karma earner","social","uncommon"
-"comments_written >= 12 and upvotes_received <= 2",0,0,"Potential comment spam","none","none"
-"login_streak == 1 and karma_earned_today >= 60",1,18,"Impressive single day impact","meteor","rare"
-"posts_created >= 2 and upvotes_received >= 12 and quizzes_completed >= 2",1,20,"Knowledge-sharing creator","scholar","rare"
-"login_streak >= 10 and karma_spent >= 30 and buddies_messaged >= 2",1,25,"Long-term generous engagement","pioneer","epic"
-"comments_written >= 4 and upvotes_received >= 8 and buddies_messaged >= 3",1,15,"Social conversation starter","engagement","uncommon"
-"login_streak >= 3 and posts_created >= 2 and karma_earned_today >= 35",1,16,"Rising content creator","creator","uncommon"
-"upvotes_received >= 30 and login_streak >= 5",1,25,"Consistently viral contributor","influencer","epic"
-"karma_spent >= 45 and buddies_messaged >= 4 and login_streak >= 2",1,18,"Social generosity","altruist","rare"
-"login_streak >= 6 and quizzes_completed >= 2 and posts_created >= 1",1,16,"Knowledge creator combo","scholar","uncommon"
-"comments_written >= 7 and upvotes_received >= 15 and karma_earned_today >= 30",1,22,"High-impact commentator","engagement","rare"
-"buddies_messaged >= 7 and karma_spent >= 25 and login_streak >= 3",1,20,"Social support network","social","rare"
-"login_streak >= 12 and karma_earned_today >= 50 and posts_created >= 2",1,30,"Elite platform contributor","pioneer","epic"
+condition,label,reward_score,reason,box_type,rarity,probability
+login_streak >= 3 and posts_created >= 1 and quizzes_completed >= 1,1,10,Engagement streak,streak,common,0.75
+upvotes_received >= 10,1,15,High upvotes,engagement,rare,0.6
+karma_spent >= 25,1,20,Social generosity,social,legendary,0.5
+login_streak == 1 and posts_created >= 1 or quizzes_completed >= 1 or comments_written >= 2 and karma_earned_today >= 5,1,12,Comeback user,comeback,rare,0.7
+posts_created >= 7 and upvotes_received <= 1,0,0,Spammy behavior,none,none,1.0
+login_streak <= 1 and posts_created == 0 and comments_written == 0 and quizzes_completed == 0 and buddies_messaged == 0 and karma_earned_today < 5,0,0,Very low activity,none,none,1.0
+posts_created >= 5 and upvotes_received >= 30 and buddies_messaged >= 5,1,25,Platform evangelist,community_hero,legendary,0.6
+quizzes_completed >= 3 and karma_earned_today >= 75,1,18,Knowledge sharer,knowledge_expert,rare,0.55
+comments_written >= 15 and posts_created <= 2,1,12,Active commenter,engagement,common,0.4
+quizzes_completed >= 3 and login_streak >= 2,1,14,Consistent quiz taker,streak,common,0.5
+comments_written >= 8 and upvotes_received >= 5,1,12,Helpful hand,social,common,0.45
+buddies_messaged >= 10 and posts_created >= 1 or comments_written >= 2,1,10,Social connector,social,common,0.35
+login_streak >= 1 and posts_created <= 1 and comments_written <= 2 and quizzes_completed <= 1 and karma_earned_today > 0 or buddies_messaged > 0,1,8,Daily dabbler,mystery,common,0.25
+karma_spent >= 50 and karma_earned_today <= 10 and posts_created == 0 and comments_written <= 2,0,0,Karma leech,none,none,1.0
+login_streak >= 10 and posts_created == 0 and comments_written == 0 and quizzes_completed == 0 and buddies_messaged == 0 and karma_earned_today == 0 and upvotes_received == 0 and karma_spent == 0,0,0,Login only,none,none,0.9

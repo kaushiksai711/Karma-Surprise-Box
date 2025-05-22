@@ -122,6 +122,97 @@ with open('feature_names.json', 'w') as f:
     json.dump(feature_names, f)
 
 print("\nBest model saved as 'classifier.pkl' and feature names saved as 'feature_names.json'.")
+# Training data shape: (50000, 8)
+# Testing data shape: (10000, 8)
+
+# Training Label Distribution:
+# 1    38887
+# 0    11113
+# Name: count, dtype: int64
+# Fitting 5 folds for each of 108 candidates, totalling 540 fits
+
+# Best Hyperparameters: {'max_depth': None, 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 300}
+
+# Model Performance on Testing Data:
+# Accuracy: 0.9767
+
+# Classification Report:
+#               precision    recall  f1-score   support
+
+#            0       0.90      1.00      0.95      2165
+#            1       1.00      0.97      0.98      7835
+
+#     accuracy                           0.98     10000
+#    macro avg       0.95      0.99      0.97     10000
+# weighted avg       0.98      0.98      0.98     10000
+
+
+# Feature Importances:
+#               Feature  Importance
+# 6         karma_spent    0.218858
+# 7  karma_earned_today    0.214305
+# 0        login_streak    0.155422
+# 4   quizzes_completed    0.153427
+# 3    upvotes_received    0.078375
+# 2    comments_written    0.076575
+# 5    buddies_messaged    0.063500
+# 1       posts_created    0.039537
+
+# Performance at Different Probability Thresholds:
+
+# Threshold = 0.4:
+#               precision    recall  f1-score   support
+
+#            0       0.97      0.98      0.97      2165
+#            1       0.99      0.99      0.99      7835
+
+#     accuracy                           0.99     10000
+#    macro avg       0.98      0.98      0.98     10000
+# weighted avg       0.99      0.99      0.99     10000
+
+
+# Threshold = 0.5:
+#               precision    recall  f1-score   support
+
+#            0       0.90      1.00      0.95      2165
+#            1       1.00      0.97      0.98      7835
+
+#     accuracy                           0.98     10000
+#    macro avg       0.95      0.99      0.97     10000
+# weighted avg       0.98      0.98      0.98     10000
+
+
+# Threshold = 0.6:
+#               precision    recall  f1-score   support
+
+#            0       0.79      1.00      0.88      2165
+#            1       1.00      0.93      0.96      7835
+
+#     accuracy                           0.94     10000
+#    macro avg       0.89      0.96      0.92     10000
+# weighted avg       0.95      0.94      0.94     10000
+
+
+# Threshold = 0.7:
+#               precision    recall  f1-score   support
+
+#            0       0.62      1.00      0.76      2165
+#            1       1.00      0.83      0.91      7835
+
+#     accuracy                           0.86     10000
+#    macro avg       0.81      0.91      0.83     10000
+# weighted avg       0.92      0.86      0.87     10000
+
+
+
+
+
+
+
+
+
+
+
 ##
 #(venv) PS D:\Karma-AI> python Classifier.py
 # Training data shape: (5100, 8)
