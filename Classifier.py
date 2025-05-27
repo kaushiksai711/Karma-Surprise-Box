@@ -2,81 +2,188 @@ import json
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import GridSearchCV, KFold
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_curve, auc
+from sklearn.preprocessing import StandardScaler
 from sklearn.utils.class_weight import compute_sample_weight
 import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
+from collections import Counter, defaultdict
+import logging
+from dataset import parse_condition, check_condition, compute_activity_score, conditions, MODEL_FEATURE_KEYS, CONFIG_KARMA_MIN, CONFIG_KARMA_MAX
 
-# Load training and testing datasets
-with open('training_data.json', 'r') as f:
-    training_data = json.load(f)
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-with open('testing_data.json', 'r') as f:
-    testing_data = json.load(f)
+# Set random seed for reproducibility
+np.random.seed(42)
 
-# Extract features and labels
-X_train = pd.DataFrame([data_point['features'] for data_point in training_data])
-y_train = np.array([data_point['label'] for data_point in training_data])
-X_test = pd.DataFrame([data_point['features'] for data_point in testing_data])
-y_test = np.array([data_point['label'] for data_point in testing_data])
+# Load data with error handling
+def load_data(filename):
+    try:
+        with open(filename, "r") as f:
+            data = json.load(f)
+        X = pd.DataFrame([sample["features"] for sample in data])[MODEL_FEATURE_KEYS]
+        y = np.array([sample["label"] for sample in data])
+        additional_info = [{
+            "user_id": sample.get("user_id", f"unknown_{i:04d}"),
+            "day": sample.get("day", "2024-01-01"),
+            "reward_score": sample["reward_score"],
+            "box_type": sample["box_type"],
+            "rarity": sample["rarity"],
+            "reason": sample.get("reason", "No reward")
+        } for i, sample in enumerate(data)]
+        logger.info(f"Loaded {filename}: {X.shape[0]} samples, {X.shape[1]} features")
+        return X, y, additional_info
+    except FileNotFoundError:
+        logger.error(f"{filename} not found.")
+        raise
+    except json.JSONDecodeError:
+        logger.error(f"Invalid JSON in {filename}.")
+        raise
+
+# Load datasets
+try:
+    X_train, y_train, train_info = load_data("training_data.json")
+    X_test, y_test, test_info = load_data("testing_data.json")
+except Exception as e:
+    logger.error(f"Failed to load data: {e}")
+    exit(1)
 
 # Print data shapes and label distribution
-print(f"Training data shape: {X_train.shape}")
-print(f"Testing data shape: {X_test.shape}")
-print("\nTraining Label Distribution:")
-print(pd.Series(y_train).value_counts())
+logger.info(f"Training data shape: {X_train.shape}")
+logger.info(f"Testing data shape: {X_test.shape}")
+logger.info("\nTraining Label Distribution:")
+logger.info(pd.Series(y_train).value_counts().to_string())
+
+# Scale features
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 
 # Handle class imbalance with sample weights
 weights = compute_sample_weight('balanced', y_train)
+logger.info("Computed sample weights for class imbalance")
 
-# Define hyperparameter grid for tuning
+# Define hyperparameter grid
 param_grid = {
     'n_estimators': [100, 200, 300],
-    'max_depth': [5, 10, 15, None],
+    'max_depth': [5, 10, 15, 20],
     'min_samples_split': [2, 5, 10],
     'min_samples_leaf': [1, 2, 4]
 }
 
-# Initialize Random Forest Classifier
+# Initialize RandomForestClassifier
 rf = RandomForestClassifier(class_weight='balanced', random_state=42, n_jobs=-1)
 
-# Perform grid search with cross-validation
+# Custom cross-validation
+n_splits = 5
+kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
+fold_metrics = defaultdict(list)
+fold_confusion_matrices = []
+
+# Cross-validation loop
+for fold, (train_idx, val_idx) in enumerate(kf.split(X_train), 1):
+    logger.info(f"\nTraining Fold {fold}/{n_splits}")
+    X_fold_train, X_fold_val = X_train.iloc[train_idx], X_train.iloc[val_idx]
+    y_fold_train, y_fold_val = y_train[train_idx], y_train[val_idx]
+    fold_weights = weights[train_idx]
+
+    # Hyperparameter tuning
+    grid_search = GridSearchCV(
+        estimator=rf,
+        param_grid=param_grid,
+        cv=3,
+        scoring='f1_weighted',
+        n_jobs=-1,
+        verbose=0
+    )
+    grid_search.fit(X_fold_train, y_fold_train, sample_weight=fold_weights)
+
+    # Best model for this fold
+    best_model = grid_search.best_estimator_
+    y_fold_pred = best_model.predict(X_fold_val)
+    y_fold_pred_proba = best_model.predict_proba(X_fold_val)[:, 1]
+
+    # Store metrics
+    fold_metrics['fold'].append(fold)
+    fold_metrics['accuracy'].append(accuracy_score(y_fold_val, y_fold_pred))
+    fold_metrics['f1_score'].append(classification_report(y_fold_val, y_fold_pred, output_dict=True)['weighted avg']['f1-score'])
+    fold_metrics['best_params'].append(grid_search.best_params_)
+    fold_confusion_matrices.append(confusion_matrix(y_fold_val, y_fold_pred))
+
+    # Log fold performance
+    logger.info(f"Fold {fold} Accuracy: {fold_metrics['accuracy'][-1]:.4f}")
+    logger.info(f"Fold {fold} F1-Score: {fold_metrics['f1_score'][-1]:.4f}")
+    logger.info(f"Fold {fold} Best Hyperparameters: {grid_search.best_params_}")
+    logger.info(f"Fold {fold} Classification Report:\n{classification_report(y_fold_val, y_fold_pred)}")
+
+# Summarize fold-wise performance
+fold_metrics_df = pd.DataFrame(fold_metrics)
+logger.info("\nCross-Validation Fold-wise Summary:")
+logger.info(fold_metrics_df.to_string())
+
+# Visualize fold-wise metrics
+plt.figure(figsize=(10, 6))
+plt.subplot(1, 2, 1)
+sns.barplot(x='fold', y='accuracy', data=fold_metrics_df)
+plt.title('Fold-wise Accuracy')
+plt.subplot(1, 2, 2)
+sns.barplot(x='fold', y='f1_score', data=fold_metrics_df)
+plt.title('Fold-wise F1-Score')
+plt.tight_layout()
+plt.savefig("fold_metrics.png")
+plt.close()
+
+# Visualize fold-wise confusion matrices
+plt.figure(figsize=(15, 3))
+for i, cm in enumerate(fold_confusion_matrices, 1):
+    plt.subplot(1, n_splits, i)
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+    plt.title(f'Fold {i} Confusion Matrix')
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+plt.tight_layout()
+plt.savefig("fold_confusion_matrices.png")
+plt.close()
+
+# Train final model
+logger.info("\nTraining final model on full training data...")
 grid_search = GridSearchCV(
     estimator=rf,
     param_grid=param_grid,
     cv=5,
-    scoring='f1_weighted',  # Optimize for balanced performance
+    scoring='f1_weighted',
     n_jobs=-1,
     verbose=1
 )
+grid_search.fit(X_train_scaled, y_train, sample_weight=weights)
 
-# Train the model with sample weights
-grid_search.fit(X_train, y_train, sample_weight=weights)
-
-# Get the best model
+# Best model
 best_rf = grid_search.best_estimator_
-print("\nBest Hyperparameters:", grid_search.best_params_)
+logger.info(f"\nBest Hyperparameters (Final Model): {grid_search.best_params_}")
 
-# Make predictions on the testing data
-y_pred = best_rf.predict(X_test)
-y_pred_proba = best_rf.predict_proba(X_test)[:, 1]
+# Predict on test data
+y_pred = best_rf.predict(X_test_scaled)
+y_pred_proba = best_rf.predict_proba(X_test_scaled)[:, 1]
 
-# Evaluate performance with multiple metrics
-print("\nModel Performance on Testing Data:")
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print("\nClassification Report:")
-print(classification_report(y_test, y_pred))
+# Evaluate test performance
+logger.info("\nModel Performance on Testing Data:")
+logger.info(f"Accuracy: {accuracy_score(y_test, y_pred):.4f}")
+logger.info("\nClassification Report:")
+logger.info(classification_report(y_test, y_pred))
 
-# Confusion Matrix
+# Confusion Matrix for Test Data
 cm = confusion_matrix(y_test, y_pred)
 plt.figure(figsize=(6, 4))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-plt.title('Confusion Matrix')
+plt.title('Test Data Confusion Matrix')
 plt.xlabel('Predicted')
 plt.ylabel('Actual')
-plt.show()
+plt.savefig("test_confusion_matrix.png")
+plt.close()
 
 # ROC Curve and AUC
 fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
@@ -90,38 +197,543 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title('Receiver Operating Characteristic (ROC) Curve')
 plt.legend(loc='lower right')
-plt.show()
+plt.savefig("roc_curve.png")
+plt.close()
 
-# Feature Importance Analysis
+# Feature Importance
 feature_importances = best_rf.feature_importances_
 importance_df = pd.DataFrame({
-    'Feature': X_train.columns,
+    'Feature': MODEL_FEATURE_KEYS,
     'Importance': feature_importances
 }).sort_values('Importance', ascending=False)
-print("\nFeature Importances:")
-print(importance_df)
+logger.info("\nFeature Importances:")
+logger.info(importance_df.to_string())
 
 # Visualize Feature Importance
 plt.figure(figsize=(8, 6))
 sns.barplot(x='Importance', y='Feature', data=importance_df)
 plt.title('Feature Importance')
-plt.show()
+plt.savefig("feature_importance.png")
+plt.close()
 
 # Probability Threshold Tuning
-thresholds = [0.4, 0.5, 0.6, 0.7]
-print("\nPerformance at Different Probability Thresholds:")
+thresholds = [0.4, 0.5]
+logger.info("\nPerformance at Different Probability Thresholds:")
 for threshold in thresholds:
     y_pred_adj = (y_pred_proba >= threshold).astype(int)
-    print(f"\nThreshold = {threshold}:")
-    print(classification_report(y_test, y_pred_adj))
+    logger.info(f"\nThreshold = {threshold}:")
+    logger.info(classification_report(y_test, y_pred_adj))
 
-# Save the best model and feature names
+# Assign reward details
+def assign_reward_details(metrics, conditions):
+    metrics_dict = metrics.to_dict()
+    user_state = {"recent_rewards": 0, "last_reward_day": -1}
+    rarity_weights = {"common": 1.0, "rare": 0.8, "epic": 0.6, "legendary": 0.5}
+    reward_freq_factor = 1.0
+
+    shuffled_conditions = conditions.copy()
+    np.random.shuffle(shuffled_conditions)
+
+    for condition in shuffled_conditions:
+        if condition["parsed_condition"] is None:
+            continue
+        if check_condition(metrics_dict, condition["parsed_condition"]):
+            prob = float(condition.get("probability", 1.0)) * reward_freq_factor * rarity_weights.get(condition["rarity"], 1.0)
+            if np.random.random() < prob:
+                if int(condition["label"]) == 1:
+                    base_score = int(condition["reward_score"])
+                    activity_score = compute_activity_score(metrics_dict)
+                    score_range = max(0, int(activity_score * (CONFIG_KARMA_MAX - CONFIG_KARMA_MIN)))
+                    reward_score = np.random.randint(
+                        max(CONFIG_KARMA_MIN, base_score - 5),
+                        min(CONFIG_KARMA_MAX, base_score + 5 + score_range)
+                    )
+                    return {
+                        "label": 1,
+                        "reward_score": reward_score,
+                        "box_type": condition["box_type"],
+                        "rarity": condition["rarity"],
+                        "reason": condition["reason"]
+                    }
+    is_somewhat_active = metrics_dict.get("login_streak", 0) > 0 and (
+        metrics_dict.get("karma_earned_today", 0) > 0 or
+        any(metrics_dict.get(k, 0) > 0 for k in ["posts_created", "comments_written", "quizzes_completed", "buddies_messaged"])
+    )
+    if is_somewhat_active and np.random.random() < 0.03:
+        return {
+            "label": 1,
+            "reward_score": np.random.randint(CONFIG_KARMA_MIN, CONFIG_KARMA_MIN + 2),
+            "box_type": "mystery",
+            "rarity": "common",
+            "reason": "Low-level activity"
+        }
+    return {
+        "label": 0,
+        "reward_score": 0,
+        "box_type": None,
+        "rarity": None,
+        "reason": "No reward"
+    }
+
+# Predict and assign rewards
+predictions = []
+for i, (idx, metrics) in enumerate(X_test.iterrows()):
+    pred_proba = best_rf.predict_proba(X_test_scaled[i:i+1])[:, 1][0]
+    pred_label = 1 if pred_proba >= 0.5 else 0  # Default threshold
+    reward_details = assign_reward_details(metrics, conditions)
+    predictions.append({
+        "user_id": test_info[i]["user_id"],
+        "day": test_info[i]["day"],
+        "features": metrics.to_dict(),
+        "true_label": int(y_test[i]),
+        "predicted_label": pred_label,
+        "predicted_proba": float(pred_proba),
+        "reward_score": reward_details["reward_score"],
+        "box_type": reward_details["box_type"],
+        "rarity": reward_details["rarity"],
+        "reason": reward_details["reason"]
+    })
+
+# Save predictions
+with open("predictions.json", "w") as f:
+    json.dump(predictions, f, indent=2)
+
+# Prediction stats
+pred_box_types = Counter(pred["box_type"] for pred in predictions if pred["predicted_label"] == 1)
+pred_rarities = Counter(pred["rarity"] for pred in predictions if pred["predicted_label"] == 1)
+logger.info("\n--- Prediction Stats ---")
+logger.info(f"Total Predictions: {len(predictions)}")
+logger.info(f"Predicted Rewarded Samples: {sum(1 for p in predictions if p['predicted_label'] == 1)} "
+            f"({sum(1 for p in predictions if p['predicted_label'] == 1)/len(predictions)*100:.2f}%)")
+logger.info(f"Predicted Box Type Distribution: {dict(pred_box_types)}")
+logger.info(f"Predicted Rarity Distribution: {dict(pred_rarities)}")
+
+# Example predictions
+logger.info("\nExample Predicted Rewarded Sample:")
+for pred in predictions:
+    if pred["predicted_label"] == 1:
+        logger.info(f"\n{json.dumps(pred, indent=2)}")
+        break
+logger.info("\nExample Predicted Non-Rewarded Sample:")
+for pred in predictions:
+    if pred["predicted_label"] == 0:
+        logger.info(f"\n{json.dumps(pred, indent=2)}")
+        break
+
+# Save model and feature names
 joblib.dump(best_rf, 'classifier.pkl')
-feature_names = X_train.columns.tolist()
+joblib.dump(scaler, 'scaler.pkl')
+feature_names = MODEL_FEATURE_KEYS
 with open('feature_names.json', 'w') as f:
     json.dump(feature_names, f)
+logger.info("\nSaved model as 'classifier.pkl', scaler as 'scaler.pkl', and feature names as 'feature_names.json'.")
 
-print("\nBest model saved as 'classifier.pkl' and feature names saved as 'feature_names.json'.")
+# Single-user prediction
+test_user_metrics = {
+    "login_streak": 5,
+    "posts_created": 2,
+    "comments_written": 3,
+    "upvotes_received": 25,
+    "quizzes_completed": 2,
+    "buddies_messaged": 1,
+    "karma_spent": 10,
+    "karma_earned_today": 20
+}
+test_df = pd.DataFrame([test_user_metrics], columns=MODEL_FEATURE_KEYS)
+test_scaled = scaler.transform(test_df)
+pred_proba = best_rf.predict_proba(test_scaled)[:, 1][0]
+pred_label = 1 if pred_proba >= 0.5 else 0
+reward_details = assign_reward_details(test_df.iloc[0], conditions)
+logger.info("\nTest Prediction for Single User:")
+logger.info({
+    "user_id": "test_user_5000",
+    "day": "2024-01-25",
+    "features": test_user_metrics,
+    "predicted_label": pred_label,
+    "predicted_proba": pred_proba,
+    **reward_details
+})
+
+# Feature Importance Chart (Chart.js)
+chart_feature_importance = {
+    "type": "bar",
+    "data": {
+        "labels": importance_df["Feature"].tolist(),
+        "datasets": [{
+            "label": "Feature Importance",
+            "data": importance_df["Importance"].tolist(),
+            "backgroundColor": "#4CAF50",
+            "borderColor": "#388E3C",
+            "borderWidth": 1
+        }]
+    },
+    "options": {
+        "scales": {
+            "y": {
+                "beginAtZero": True,
+                "title": {"display": True, "text": "Importance Score"}
+            },
+            "x": {
+                "title": {"display": True, "text": "Feature"}
+            }
+        },
+        "plugins": {
+            "legend": {"display": False},
+            "title": {"display": True, "text": "Feature Importance for RandomForestClassifier"}
+        }
+    }
+}
+
+# Predicted Rarity Distribution Chart (Chart.js)
+chart_rarity_distribution = {
+    "type": "pie",
+    "data": {
+        "labels": list(pred_rarities.keys()),
+        "datasets": [{
+            "label": "Predicted Rarity Distribution",
+            "data": list(pred_rarities.values()),
+            "backgroundColor": ["#4CAF50", "#FF9800", "#F44336", "#9C27B0"],
+            "borderColor": ["#388E3C", "#F57C00", "#D32F2F", "#7B1FA2"],
+            "borderWidth": 1
+        }]
+    },
+    "options": {
+        "plugins": {
+            "legend": {"position": "right"},
+            "title": {"display": true, "text": "Predicted Rarity Distribution"}
+        }
+    }
+}
+
+# Save charts
+with open("feature_importance_chart.json", "w") as f:
+    json.dump(chart_feature_importance, f, indent=2)
+with open("rarity_distribution_chart.json", "w") as f:
+    json.dump(chart_rarity_distribution, f, indent=2)
+# import json
+# import pandas as pd
+# import numpy as np
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.model_selection import train_test_split, GridSearchCV, KFold
+# from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_curve, auc
+# from sklearn.utils.class_weight import compute_sample_weight
+# import joblib
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+# from collections import defaultdict
+
+# # Set random seed for reproducibility
+# np.random.seed(42)
+
+# # Load training and testing datasets
+# with open('training_data.json', 'r') as f:
+#     training_data = json.load(f)
+
+# with open('testing_data.json', 'r') as f:
+#     testing_data = json.load(f)
+
+# # Extract features and labels
+# X_train = pd.DataFrame([data_point['features'] for data_point in training_data])
+# y_train = np.array([data_point['label'] for data_point in training_data])
+# X_test = pd.DataFrame([data_point['features'] for data_point in testing_data])
+# y_test = np.array([data_point['label'] for data_point in testing_data])
+
+# # Print data shapes and label distribution
+# print(f"Training data shape: {X_train.shape}")
+# print(f"Testing data shape: {X_test.shape}")
+# print("\nTraining Label Distribution:")
+# print(pd.Series(y_train).value_counts())
+
+# # Handle class imbalance with sample weights
+# weights = compute_sample_weight('balanced', y_train)
+
+# # Define hyperparameter grid for tuning
+# param_grid = {
+#     'n_estimators': [100, 200, 300],
+#     'max_depth': [5, 10, 15, None],
+#     'min_samples_split': [2, 5, 10],
+#     'min_samples_leaf': [1, 2, 4]
+# }
+
+# # Initialize Random Forest Classifier
+# rf = RandomForestClassifier(class_weight='balanced', random_state=42, n_jobs=-1)
+
+# # Custom cross-validation with detailed fold-wise metrics
+# n_splits = 5
+# kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
+# fold_metrics = defaultdict(list)
+# fold_confusion_matrices = []
+
+# # Manual cross-validation loop for transparency
+# for fold, (train_idx, val_idx) in enumerate(kf.split(X_train), 1):
+#     print(f"\nTraining Fold {fold}/{n_splits}")
+#     X_fold_train, X_fold_val = X_train.iloc[train_idx], X_train.iloc[val_idx]
+#     y_fold_train, y_fold_val = y_train[train_idx], y_train[val_idx]
+#     fold_weights = weights[train_idx]
+    
+#     # Train model on this fold
+#     grid_search = GridSearchCV(
+#         estimator=rf,
+#         param_grid=param_grid,
+#         cv=3,  # Inner CV for hyperparameter tuning
+#         scoring='f1_weighted',
+#         n_jobs=-1,
+#         verbose=0
+#     )
+#     grid_search.fit(X_fold_train, y_fold_train, sample_weight=fold_weights)
+    
+#     # Best model for this fold
+#     best_model = grid_search.best_estimator_
+#     y_fold_pred = best_model.predict(X_fold_val)
+#     y_fold_pred_proba = best_model.predict_proba(X_fold_val)[:, 1]
+    
+#     # Store metrics
+#     fold_metrics['fold'].append(fold)
+#     fold_metrics['accuracy'].append(accuracy_score(y_fold_val, y_fold_pred))
+#     fold_metrics['f1_score'].append(classification_report(y_fold_val, y_fold_pred, output_dict=True)['weighted avg']['f1-score'])
+#     fold_metrics['best_params'].append(grid_search.best_params_)
+    
+#     # Store confusion matrix
+#     cm = confusion_matrix(y_fold_val, y_fold_pred)
+#     fold_confusion_matrices.append(cm)
+    
+#     # Print fold performance
+#     print(f"Fold {fold} Accuracy: {fold_metrics['accuracy'][-1]:.4f}")
+#     print(f"Fold {fold} F1-Score: {fold_metrics['f1_score'][-1]:.4f}")
+#     print(f"Fold {fold} Best Hyperparameters: {grid_search.best_params_}")
+#     print(f"Fold {fold} Classification Report:")
+#     print(classification_report(y_fold_val, y_fold_pred))
+
+# # Summarize fold-wise performance
+# fold_metrics_df = pd.DataFrame(fold_metrics)
+# print("\nCross-Validation Fold-wise Summary:")
+# print(fold_metrics_df)
+
+# # Visualize fold-wise metrics
+# plt.figure(figsize=(10, 6))
+# plt.subplot(1, 2, 1)
+# sns.barplot(x='fold', y='accuracy', data=fold_metrics_df)
+# plt.title('Fold-wise Accuracy')
+# plt.subplot(1, 2, 2)
+# sns.barplot(x='fold', y='f1_score', data=fold_metrics_df)
+# plt.title('Fold-wise F1-Score')
+# plt.tight_layout()
+# plt.show()
+
+# # Visualize fold-wise confusion matrices
+# plt.figure(figsize=(15, 3))
+# for i, cm in enumerate(fold_confusion_matrices, 1):
+#     plt.subplot(1, n_splits, i)
+#     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+#     plt.title(f'Fold {i} Confusion Matrix')
+#     plt.xlabel('Predicted')
+#     plt.ylabel('Actual')
+# plt.tight_layout()
+# plt.show()
+
+# # Train final model on full training data
+# grid_search = GridSearchCV(
+#     estimator=rf,
+#     param_grid=param_grid,
+#     cv=5,
+#     scoring='f1_weighted',
+#     n_jobs=-1,
+#     verbose=1
+# )
+# grid_search.fit(X_train, y_train, sample_weight=weights)
+
+# # Get the best model
+# best_rf = grid_search.best_estimator_
+# print("\nBest Hyperparameters (Final Model):", grid_search.best_params_)
+
+# # Make predictions on the testing data
+# y_pred = best_rf.predict(X_test)
+# y_pred_proba = best_rf.predict_proba(X_test)[:, 1]
+
+# # Evaluate performance with multiple metrics
+# print("\nModel Performance on Testing Data:")
+# print("Accuracy:", accuracy_score(y_test, y_pred))
+# print("\nClassification Report:")
+# print(classification_report(y_test, y_pred))
+
+# # Confusion Matrix for Test Data
+# cm = confusion_matrix(y_test, y_pred)
+# plt.figure(figsize=(6, 4))
+# sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+# plt.title('Test Data Confusion Matrix')
+# plt.xlabel('Predicted')
+# plt.ylabel('Actual')
+# plt.show()
+
+# # ROC Curve and AUC for Test Data
+# fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
+# roc_auc = auc(fpr, tpr)
+# plt.figure(figsize=(6, 4))
+# plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (AUC = {roc_auc:.2f})')
+# plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+# plt.xlim([0.0, 1.0])
+# plt.ylim([0.0, 1.05])
+# plt.xlabel('False Positive Rate')
+# plt.ylabel('True Positive Rate')
+# plt.title('Receiver Operating Characteristic (ROC) Curve')
+# plt.legend(loc='lower right')
+# plt.show()
+
+# # Feature Importance Analysis
+# feature_importances = best_rf.feature_importances_
+# importance_df = pd.DataFrame({
+#     'Feature': X_train.columns,
+#     'Importance': feature_importances
+# }).sort_values('Importance', ascending=False)
+# print("\nFeature Importances:")
+# print(importance_df)
+
+# # Visualize Feature Importance
+# plt.figure(figsize=(8, 6))
+# sns.barplot(x='Importance', y='Feature', data=importance_df)
+# plt.title('Feature Importance')
+# plt.show()
+
+# # Probability Threshold Tuning
+# thresholds = [0.4, 0.5, 0.6, 0.7]
+# print("\nPerformance at Different Probability Thresholds:")
+# for threshold in thresholds:
+#     y_pred_adj = (y_pred_proba >= threshold).astype(int)
+#     print(f"\nThreshold = {threshold}:")
+#     print(classification_report(y_test, y_pred_adj))
+
+# # Save the best model and feature names
+# joblib.dump(best_rf, 'classifier.pkl')
+# feature_names = X_train.columns.tolist()
+# with open('feature_names.json', 'w') as f:
+#     json.dump(feature_names, f)
+
+# print("\nBest model saved as 'classifier.pkl' and feature names saved as 'feature_names.json'.")
+
+# import json
+# import pandas as pd
+# import numpy as np
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.model_selection import train_test_split, GridSearchCV
+# from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_curve, auc
+# from sklearn.utils.class_weight import compute_sample_weight
+# import joblib
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+
+# # Load training and testing datasets
+# with open('training_data.json', 'r') as f:
+#     training_data = json.load(f)
+
+# with open('testing_data.json', 'r') as f:
+#     testing_data = json.load(f)
+
+# # Extract features and labels
+# X_train = pd.DataFrame([data_point['features'] for data_point in training_data])
+# y_train = np.array([data_point['label'] for data_point in training_data])
+# X_test = pd.DataFrame([data_point['features'] for data_point in testing_data])
+# y_test = np.array([data_point['label'] for data_point in testing_data])
+
+# # Print data shapes and label distribution
+# print(f"Training data shape: {X_train.shape}")
+# print(f"Testing data shape: {X_test.shape}")
+# print("\nTraining Label Distribution:")
+# print(pd.Series(y_train).value_counts())
+
+# # Handle class imbalance with sample weights
+# weights = compute_sample_weight('balanced', y_train)
+
+# # Define hyperparameter grid for tuning
+# param_grid = {
+#     'n_estimators': [100, 200, 300],
+#     'max_depth': [5, 10, 15, None],
+#     'min_samples_split': [2, 5, 10],
+#     'min_samples_leaf': [1, 2, 4]
+# }
+
+# # Initialize Random Forest Classifier
+# rf = RandomForestClassifier(class_weight='balanced', random_state=42, n_jobs=-1)
+
+# # Perform grid search with cross-validation
+# grid_search = GridSearchCV(
+#     estimator=rf,
+#     param_grid=param_grid,
+#     cv=5,
+#     scoring='f1_weighted',  # Optimize for balanced performance
+#     n_jobs=-1,
+#     verbose=1
+# )
+
+# # Train the model with sample weights
+# grid_search.fit(X_train, y_train, sample_weight=weights)
+
+# # Get the best model
+# best_rf = grid_search.best_estimator_
+# print("\nBest Hyperparameters:", grid_search.best_params_)
+
+# # Make predictions on the testing data
+# y_pred = best_rf.predict(X_test)
+# y_pred_proba = best_rf.predict_proba(X_test)[:, 1]
+
+# # Evaluate performance with multiple metrics
+# print("\nModel Performance on Testing Data:")
+# print("Accuracy:", accuracy_score(y_test, y_pred))
+# print("\nClassification Report:")
+# print(classification_report(y_test, y_pred))
+
+# # Confusion Matrix
+# cm = confusion_matrix(y_test, y_pred)
+# plt.figure(figsize=(6, 4))
+# sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+# plt.title('Confusion Matrix')
+# plt.xlabel('Predicted')
+# plt.ylabel('Actual')
+# plt.show()
+
+# # ROC Curve and AUC
+# fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
+# roc_auc = auc(fpr, tpr)
+# plt.figure(figsize=(6, 4))
+# plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (AUC = {roc_auc:.2f})')
+# plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+# plt.xlim([0.0, 1.0])
+# plt.ylim([0.0, 1.05])
+# plt.xlabel('False Positive Rate')
+# plt.ylabel('True Positive Rate')
+# plt.title('Receiver Operating Characteristic (ROC) Curve')
+# plt.legend(loc='lower right')
+# plt.show()
+
+# # Feature Importance Analysis
+# feature_importances = best_rf.feature_importances_
+# importance_df = pd.DataFrame({
+#     'Feature': X_train.columns,
+#     'Importance': feature_importances
+# }).sort_values('Importance', ascending=False)
+# print("\nFeature Importances:")
+# print(importance_df)
+
+# # Visualize Feature Importance
+# plt.figure(figsize=(8, 6))
+# sns.barplot(x='Importance', y='Feature', data=importance_df)
+# plt.title('Feature Importance')
+# plt.show()
+
+# # Probability Threshold Tuning
+# thresholds = [0.4, 0.5, 0.6, 0.7]
+# print("\nPerformance at Different Probability Thresholds:")
+# for threshold in thresholds:
+#     y_pred_adj = (y_pred_proba >= threshold).astype(int)
+#     print(f"\nThreshold = {threshold}:")
+#     print(classification_report(y_test, y_pred_adj))
+
+# # Save the best model and feature names
+# joblib.dump(best_rf, 'classifier.pkl')
+# feature_names = X_train.columns.tolist()
+# with open('feature_names.json', 'w') as f:
+#     json.dump(feature_names, f)
+
+# print("\nBest model saved as 'classifier.pkl' and feature names saved as 'feature_names.json'.")
 # Training data shape: (50000, 8)
 # Testing data shape: (10000, 8)
 
