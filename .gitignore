@@ -1,2 +1,6 @@
 venv/
 classifier.pkl
+1747602663282.pdf
+.vscode
+__pycache__
+model_load.py

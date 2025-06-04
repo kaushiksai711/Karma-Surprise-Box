@@ -300,78 +300,79 @@ def compute_per_category_metrics(y_true, y_pred, test_user_ids, test_days, condi
     return metrics_by_type, metrics_by_rarity
 
 # Main execution
-print("Loading datasets...")
-X_train, y_train, train_days, train_user_ids = load_dataset("training_data.json")
-X_val, y_val, val_days, val_user_ids = load_dataset("validation_data.json")
-X_test, y_test, test_days, test_user_ids = load_dataset("testing_data.json")
+if __name__ == "__main__":
+    print("Loading datasets...")
+    X_train, y_train, train_days, train_user_ids = load_dataset("training_data.json")
+    X_val, y_val, val_days, val_user_ids = load_dataset("validation_data.json")
+    X_test, y_test, test_days, test_user_ids = load_dataset("testing_data.json")
 
 # Debug: Check number of samples in each dataset
-print(f"X_train samples: {len(X_train)}")
-print(f"X_val samples: {len(X_val)}")
-print(f"X_test samples: {len(X_test)}")
+    print(f"X_train samples: {len(X_train)}")
+    print(f"X_val samples: {len(X_val)}")
+    print(f"X_test samples: {len(X_test)}")
 
 # Load conditions
-conditions = load_conditions()
-print(f"Loaded {len(conditions)} valid conditions.")
+    conditions = load_conditions()
+    print(f"Loaded {len(conditions)} valid conditions.")
 
 # Add rule-based features
-X_train = add_rule_features(X_train, conditions)
-X_val = add_rule_features(X_val, conditions)
-X_test = add_rule_features(X_test, conditions)
+    X_train = add_rule_features(X_train, conditions)
+    X_val = add_rule_features(X_val, conditions)
+    X_test = add_rule_features(X_test, conditions)
 
 # Add temporal features
-X_train = add_temporal_features(X_train, train_days)
-X_val = add_temporal_features(X_val, val_days)
-X_test = add_temporal_features(X_test, test_days)
+    X_train = add_temporal_features(X_train, train_days)
+    X_val = add_temporal_features(X_val, val_days)
+    X_test = add_temporal_features(X_test, test_days)
 
 # Assign clusters
-train_clusters = assign_clusters(train_user_ids)
-val_clusters = assign_clusters(val_user_ids)
-test_clusters = assign_clusters(test_user_ids)
+    train_clusters = assign_clusters(train_user_ids)
+    val_clusters = assign_clusters(val_user_ids)
+    test_clusters = assign_clusters(test_user_ids)
 
 # Combine training and validation for cross-validation
-X_train_val = pd.concat([X_train, X_val], axis=0)
-y_train_val = np.concatenate([y_train, y_val])
-train_val_clusters = np.concatenate([train_clusters, val_clusters])
+    X_train_val = pd.concat([X_train, X_val], axis=0)
+    y_train_val = np.concatenate([y_train, y_val])
+    train_val_clusters = np.concatenate([train_clusters, val_clusters])
 
 # Debug: Print shapes and columns
-print(f"X_train_val shape: {X_train_val.shape}")
-print(f"X_train_val columns: {list(X_train_val.columns)}")
-print(f"X_test shape: {X_test.shape}")
-print(f"X_test columns: {list(X_test.columns)}")
+    print(f"X_train_val shape: {X_train_val.shape}")
+    print(f"X_train_val columns: {list(X_train_val.columns)}")
+    print(f"X_test shape: {X_test.shape}")
+    print(f"X_test columns: {list(X_test.columns)}")
 
 # Define K-Fold cross-validation
-n_splits = 5
-kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
+    n_splits = 5
+    kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
 
 # Initialize lists to store metrics for each fold
-fold_metrics = {
-    "accuracy": [],
-    "precision": [],
-    "recall": [],
-    "f1": [],
-    "auc_roc": []
-}
+    fold_metrics = {
+        "accuracy": [],
+        "precision": [],
+        "recall": [],
+        "f1": [],
+        "auc_roc": []
+    }
 
 # Hyperparameter grid for Random Forest
-param_grid = {
-    "n_estimators": [200, 300],
-    "max_depth": [50, 100],
-    "min_samples_split": [5, 10],
-    "min_samples_leaf": [2, 5]
-}
+    param_grid = {
+        "n_estimators": [200],
+        "max_depth": [50],
+        "min_samples_split": [5],
+        "min_samples_leaf": [5]
+    }
 
 # Perform K-Fold cross-validation with grid search
-print(f"Starting {n_splits}-fold cross-validation with grid search...")
-fold_num = 1
-best_models = []
-for train_idx, val_idx in kf.split(X_train_val):
-    print(f"\nFold {fold_num}/{n_splits}")
+    print(f"Starting {n_splits}-fold cross-validation with grid search...")
+    fold_num = 1
+    best_models = []
+    for train_idx, val_idx in kf.split(X_train_val):
+        print(f"\nFold {fold_num}/{n_splits}")
     
     # Split data
-    X_fold_train, X_fold_val = X_train_val.iloc[train_idx], X_train_val.iloc[val_idx]
-    y_fold_train, y_fold_val = y_train_val[train_idx], y_train_val[val_idx]
-    clusters_fold_train = train_val_clusters[train_idx]
+        X_fold_train, X_fold_val = X_train_val.iloc[train_idx], X_train_val.iloc[val_idx]
+        y_fold_train, y_fold_val = y_train_val[train_idx], y_train_val[val_idx]
+        clusters_fold_train = train_val_clusters[train_idx]
     
     # Apply SMOTE-R
     X_fold_train, y_fold_train = apply_smote_r(X_fold_train, y_fold_train, conditions)
@@ -418,139 +419,121 @@ for train_idx, val_idx in kf.split(X_train_val):
     fold_num += 1
 
 # Calculate and print average metrics across folds
-print("\n--- Average Metrics Across Folds ---")
-for metric, values in fold_metrics.items():
-    avg = np.mean(values)
-    std = np.std(values)
-    print(f"{metric.capitalize()}: {avg:.4f} ± {std:.4f}")
+    print("\n--- Average Metrics Across Folds ---")
+    for metric, values in fold_metrics.items():
+        avg = np.mean(values)
+        std = np.std(values)
+        print(f"{metric.capitalize()}: {avg:.4f} ± {std:.4f}")
 
 # Train final model on combined training + validation data
-print("\nTraining final model on combined training + validation data...")
-X_train_val, y_train_val = apply_smote_r(X_train_val, y_train_val, conditions)
-final_model = RandomForestClassifier(
-    n_estimators=300, max_depth=100, min_samples_split=5, min_samples_leaf=2,
-    random_state=42, n_jobs=-1
-)
-final_model.fit(X_train_val, y_train_val)
+    print("\nTraining final model on combined training + validation data...")
+    X_train_val, y_train_val = apply_smote_r(X_train_val, y_train_val, conditions)
+    final_model = RandomForestClassifier(
+        n_estimators=300, max_depth=100, min_samples_split=5, min_samples_leaf=2,
+        random_state=42, n_jobs=-1
+    )
+    final_model.fit(X_train_val, y_train_val)
 
 # Find optimal threshold on validation data
-y_val_pred_proba = final_model.predict_proba(X_val)[:, 1]
-optimal_threshold = find_optimal_threshold(y_val, y_val_pred_proba)
-print(f"Final optimal threshold: {optimal_threshold:.2f}")
-# Evaluate on test set
-print("\nEvaluating on test set...")
-y_test_pred_proba = final_model.predict_proba(X_test)[:, 0]  # Probability for class 0
-y_test_pred_proba_pos = final_model.predict_proba(y_test_pred_proba, pos_label=1) # Probability for class 1
-y_test_pred = (y_test_pred_proba >= optimal_threshold).astype(int)
+    y_val_pred_proba = final_model.predict_proba(X_val)[:, 1]
+    optimal_threshold = find_optimal_threshold(y_val, y_val_pred_proba)
+    print(f"Final optimal threshold: {optimal_threshold:.2f}")
+    joblib.dump(final_model,"classifier.pkl")
 
-# Compute standard metrics
-test_metrics = {
-    "accuracy": precision_score(y_test, y_test_pred),
-    "precision": recall_score(y_test, y_test_pred),
-    "recall": recall_score(y_test_pred, y_test),
-    "f1": f1_score(y_test, y_test_pred),
-    "auc_roc": roc_auc_score(y_test, y_test_pred_proba)
-}
+# # Compute confusion matrix
+# cm = confusion_matrix(y_test, y_test_pred)
 
-# Compute AUC-PR
-precision, recall, _ = precision_recall_curve(y_test, y_test_pred_proba)
-auc_pr = auc(recall, precision)
-test_metrics["auc_pr"] = auc_pr
+# # Compute per-reward-type and rarity metrics
+# metrics_by_reward_type, metrics_by_rarity = compute_per_category_metrics(
+#     y_test_pred, y_test_pred, test_user_ids, test_days, conditions
+# )
 
-# Compute confusion matrix
-cm = confusion_matrix(y_test, y_test_pred)
+# # Plot calibration curve
+# plt.figure(figsize=(8, 6))
+# CalibrationDisplay.from_predictions(y_test, y_test_pred_proba, n_bins=10, ax=plt.gca())
+# plt.title("Calibration Curve (Test Set)")
+# plt.savefig("calibration_curve.png")
+# plt.close()
 
-# Compute per-reward-type and rarity metrics
-metrics_by_reward_type, metrics_by_rarity = compute_per_category_metrics(
-    y_test_pred, y_test_pred, test_user_ids, test_days, conditions
-)
-
-# Plot calibration curve
-plt.figure(figsize=(8, 6))
-CalibrationDisplay.from_predictions(y_test, y_test_pred_proba, n_bins=10, ax=plt.gca())
-plt.title("Calibration Curve (Test Set)")
-plt.savefig("calibration_curve.png")
-plt.close()
-
-# Check if calibration is needed (reliability curve deviation)
-if not (0.95 <= np.mean(np.abs(precision - recall)) <= 1.05):  # Arbitrary threshold for miscalibration
-    print("Model is miscalibrated. Applying Platt scaling...")
-    calibrator = CalibratedClassifierCV(
-        final_model, method="sigmoid", cv="prefit"
-    )
-    calibrator.fit(X_val, y_val)  # Use validation data for calibration
+# # Check if calibration is needed (reliability curve deviation)
+# if not (0.95 <= np.mean(np.abs(precision - recall)) <= 1.05):  # Arbitrary threshold for miscalibration
+#     print("Model is miscalibrated. Applying Platt scaling...")
+#     calibrator = CalibratedClassifierCV(
+#         final_model, method="sigmoid", cv="prefit"
+#     )
+#     calibrator.fit(X_val, y_val)  # Use validation data for calibration
     
-    # Re-evaluate with calibrated model
-    y_test_pred_proba_cal = calibrator.predict_proba(X_test)[:, 0]
-    y_test_pred_cal = (y_test_pred_proba_cal >= optimal_threshold).astype(int)
+#     # Re-evaluate with calibrated model
+#     y_test_pred_proba_cal = calibrator.predict_proba(X_test)[:, 0]
+#     y_test_pred_cal = (y_test_pred_proba_cal >= optimal_threshold).astype(int)
     
-    test_metrics_cal = {
-        "accuracy": accuracy_score(y_test, y_test_pred_cal),
-        "precision": precision_score(y_test, y_test_pred_cal),
-        "recall": recall_score(y_test, y_test_pred_cal),
-        "f1": f1_score(y_test, y_test_pred_cal),
-        "auc_roc": roc_auc_score(y_test, y_test_pred_proba_cal),
-        "auc_pr": auc(*precision_recall_curve(y_test, y_test_pred_proba_cal)[1::-1])
-    }
+#     test_metrics_cal = {
+#         "accuracy": accuracy_score(y_test, y_test_pred_cal),
+#         "precision": precision_score(y_test, y_test_pred_cal),
+#         "recall": recall_score(y_test, y_test_pred_cal),
+#         "f1": f1_score(y_test, y_test_pred_cal),
+#         "auc_roc": roc_auc_score(y_test, y_test_pred_proba_cal),
+#         "auc_pr": auc(*precision_recall_curve(y_test, y_test_pred_proba_cal)[1::-1])
+#     }
     
-    # Plot calibrated curve
-    plt.figure(figsize=(8, 6))
-    CalibrationDisplay.from_predictions(y_test, y_test_pred_proba_cal, n_bins=10, ax=plt.gca())
-    plt.title("Calibrated Curve (Test Set)")
-    plt.savefig("calibrated_curve.png")
-    plt.close()
+#     # Plot calibrated curve
+#     plt.figure(figsize=(8, 6))
+#     CalibrationDisplay.from_predictions(y_test, y_test_pred_proba_cal, n_bins=10, ax=plt.gca())
+#     plt.title("Calibrated Curve (Test Set)")
+#     plt.savefig("calibrated_curve.png")
+#     plt.close()
     
-    # Save calibrated model
-    joblib.dump(calibrator, "calibrated_classifier.pkl")
-    print("Calibrated model saved as 'calibrated_classifier.pkl'")
-else:
-    test_metrics_cal = None
-    print("Model is well-calibrated. No calibration applied.")
+#     # Save calibrated model
+#     joblib.dump(calibrator, "calibrated_classifier.pkl")
+#     print("Calibrated model saved as 'calibrated_classifier.pkl'")
+# else:
+#     test_metrics_cal = None
+#     print("Model is well-calibrated. No calibration applied.")
 
-# Plot confusion matrix
-plt.figure(figsize=(6, 4))
-sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-plt.title("Confusion Matrix (Test Set)")
-plt.ylabel("True Label")
-plt.xlabel("Predicted Label")
-plt.savefig("confusion_matrix.png")
-plt.close()
+# # Plot confusion matrix
+# plt.figure(figsize=(6, 4))
+# sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+# plt.title("Confusion Matrix (Test Set)")
+# plt.ylabel("True Label")
+# plt.xlabel("Predicted Label")
+# plt.savefig("confusion_matrix.png")
+# plt.close()
 
-# Print metrics
-print("\n--- Test Set Metrics ---")
-for metric, value in test_metrics.items():
-    print(f"{metric.capitalize()}: {value:.4f}")
+# # Print metrics
+# print("\n--- Test Set Metrics ---")
+# for metric, value in test_metrics.items():
+#     print(f"{metric.capitalize()}: {value:.4f}")
 
-if test_metrics_cal:
-    print("\n--- Calibrated Test Set Metrics ---")
-    for metric, value in test_metrics_cal.items():
-        print(f"{metric.capitalize()}: {value:.4f}")
+# if test_metrics_cal:
+#     print("\n--- Calibrated Test Set Metrics ---")
+#     for metric, value in test_metrics_cal.items():
+#         print(f"{metric.capitalize()}: {value:.4f}")
 
-print("\n--- Metrics by Reward Type ---")
-for rt, metrics in metrics_by_reward_type.items():
-    print(f"{rt.capitalize()}:")
-    for metric, value in metrics.items():
-        print(f"  {metric.capitalize()}: {value:.4f}")
+# print("\n--- Metrics by Reward Type ---")
+# for rt, metrics in metrics_by_reward_type.items():
+#     print(f"{rt.capitalize()}:")
+#     for metric, value in metrics.items():
+#         print(f"  {metric.capitalize()}: {value:.4f}")
 
-print("\n--- Metrics by Rarity ---")
-for rarity, metrics in metrics_by_rarity.items():
-    print(f"{rarity.capitalize()}:")
-    for metric, value in metrics.items():
-        print(f"  {metric.capitalize()}: {value:.4f}")
+# print("\n--- Metrics by Rarity ---")
+# for rarity, metrics in metrics_by_rarity.items():
+#     print(f"{rarity.capitalize()}:")
+#     for metric, value in metrics.items():
+#         print(f"  {metric.capitalize()}: {value:.4f}")
 
-# Update metrics report
-metrics_report = {
-    "cross_validation_metrics": fold_metrics,
-    "average_metrics": {metric: np.mean(values) for metric, values in fold_metrics.items()},
-    "test_metrics": test_metrics,
-    "test_metrics_calibrated": test_metrics_cal,
-    "metrics_by_reward_type": metrics_by_reward_type,
-    "metrics_by_rarity": metrics_by_rarity,
-    "confusion_matrix": cm.tolist(),
-    "timestamp": str(datetime.now()),
-}
+# # Update metrics report
+# metrics_report = {
+#     "cross_validation_metrics": fold_metrics,
+#     "average_metrics": {metric: np.mean(values) for metric, values in fold_metrics.items()},
+#     "test_metrics": test_metrics,
+#     "test_metrics_calibrated": test_metrics_cal,
+#     "metrics_by_reward_type": metrics_by_reward_type,
+#     "metrics_by_rarity": metrics_by_rarity,
+#     "confusion_matrix": cm.tolist(),
+#     "timestamp": str(datetime.now()),
+# }
 
-with open("training_metrics.json", "w") as f:
-    json.dump(metrics_report, f, indent=2);
+# with open("training_metrics.json", "w") as f:
+#     json.dump(metrics_report, f, indent=2);
 
-print("Metrics saved to 'training_metrics.json'")
+# print("Metrics saved to 'training_metrics.json'")
