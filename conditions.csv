@@ -9,7 +9,7 @@ condition,label,reward_score,reason,display_reason,box_type,rarity,probability
 "posts_created >= 2 and upvotes_received >= 12 and buddies_messaged >= 2",1,28,Platform evangelist,You're a community superstar!,community_hero,legendary,0.95
 "quizzes_completed >= 1 and karma_earned_today >= 25",1,20,Knowledge sharer,Your knowledge inspires others!,knowledge_expert,rare,0.95
 "login_streak == 1 and (posts_created >= 1 or quizzes_completed >= 1 or comments_written >= 2 and karma_earned_today >= 5)",1,15,Comeback user,Welcome back with a bang!,comeback,rare,0.98
-"login_streak >= 1 and posts_created <= 1 and comments_written <= 2 and quizzes_completed <= 1 and (karma_earned_today > 0 or buddies_messaged > 0)",1,10,Daily dabbler,Every bit of activity counts!,mystery,common,0.60
+"login_streak >= 2 and posts_created <= 1 and comments_written <= 2 and quizzes_completed <= 1 and (karma_earned_today >= 5 or buddies_messaged >= 1)",1,5,Daily dabbler,You're active every day!,mystery,common,0.43
 "posts_created >= 5 and upvotes_received <= 2",0,0,Spammy behavior,No reward for low-impact posts,none,none,1.0
 "login_streak <= 1 and posts_created == 0 and comments_written == 0 and quizzes_completed == 0 and buddies_messaged == 0 and karma_earned_today < 5",0,0,Very low activity,Get more active to earn rewards!,none,none,1.0
 "karma_spent >= 25 and karma_earned_today <= 8 and posts_created == 0 and comments_written <= 2",0,0,Karma leech,Engage more to earn rewards!,none,none,1.0

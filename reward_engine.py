@@ -267,10 +267,15 @@ class RewardEngine:
 def load_model():
     """Load the trained classifier model."""
     try:
-        with open('classifier.pkl', 'rb') as f:
+        with open('classifier_bal_1.pkl', 'rb') as f:
             model = joblib.load(f)
             print('model loaded')
         return model
+    # try:
+    #     with open('classifier.pkl', 'rb') as f:
+    #         model = joblib.load(f)
+    #         print('model loaded')
+    #     return model
     except Exception as e:
         print(f"Error loading model: {e}")
         return None

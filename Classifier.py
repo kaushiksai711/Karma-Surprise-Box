@@ -163,7 +163,7 @@ def add_rule_features(X, conditions):
     for i in range(len(X)):
         metrics = X.iloc[i].to_dict()
         for j, cond in enumerate(conditions):
-            rule_features[i, j] = check_condition(metrics, cond["parsed_condition"])
+            rule_features[i, j] = 1 if check_condition(metrics, cond["parsed_condition"]) else 0
     rule_cols = [f"rule_{i}" for i in range(len(conditions))]
     return pd.concat([X, pd.DataFrame(rule_features, columns=rule_cols, index=X.index)], axis=1)
 
@@ -226,7 +226,7 @@ def apply_smote_r(X, y, conditions):
             for key in MODEL_FEATURE_KEYS:
                 X_res.iloc[i, X_res.columns.get_loc(key)] = metrics[key]
             for j, cond in enumerate(conditions):
-                X_res.iloc[i, X_res.columns.get_loc(f"rule_{j}")] = check_condition(metrics, cond["parsed_condition"])
+                X_res.iloc[i, X_res.columns.get_loc(f"rule_{j}")] = 1 if  check_condition(metrics, cond["parsed_condition"]) else 0
     
     return X_res, y_res
 
@@ -302,9 +302,9 @@ def compute_per_category_metrics(y_true, y_pred, test_user_ids, test_days, condi
 # Main execution
 if __name__ == "__main__":
     print("Loading datasets...")
-    X_train, y_train, train_days, train_user_ids = load_dataset("training_data.json")
-    X_val, y_val, val_days, val_user_ids = load_dataset("validation_data.json")
-    X_test, y_test, test_days, test_user_ids = load_dataset("testing_data.json")
+    X_train, y_train, train_days, train_user_ids = load_dataset("training_data_bal_1.json")
+    X_val, y_val, val_days, val_user_ids = load_dataset("validation_data_bal_1.json")
+    X_test, y_test, test_days, test_user_ids = load_dataset("testing_data_bal_1.json")
 
 # Debug: Check number of samples in each dataset
     print(f"X_train samples: {len(X_train)}")
@@ -373,50 +373,50 @@ if __name__ == "__main__":
         X_fold_train, X_fold_val = X_train_val.iloc[train_idx], X_train_val.iloc[val_idx]
         y_fold_train, y_fold_val = y_train_val[train_idx], y_train_val[val_idx]
         clusters_fold_train = train_val_clusters[train_idx]
-    
-    # Apply SMOTE-R
-    X_fold_train, y_fold_train = apply_smote_r(X_fold_train, y_fold_train, conditions)
-    
-    # Grid search for this fold
-    base_model = RandomForestClassifier(random_state=42, n_jobs=-1)
-    grid_search = GridSearchCV(base_model, param_grid, cv=3, scoring="accuracy", n_jobs=-1)
-    grid_search.fit(X_fold_train, y_fold_train)
-    
-    model = grid_search.best_estimator_
-    best_models.append(model)
-    
-    # Find optimal threshold
-    y_fold_pred_proba = model.predict_proba(X_fold_val)[:, 1]
-    threshold = find_optimal_threshold(y_fold_val, y_fold_pred_proba)
-    
-    # Predict on validation fold with optimal threshold
-    y_pred = (y_fold_pred_proba >= threshold).astype(int)
-    y_pred_proba = y_fold_pred_proba
-    
-    # Calculate metrics
-    accuracy = accuracy_score(y_fold_val, y_pred)
-    precision = precision_score(y_fold_val, y_pred)
-    recall = recall_score(y_fold_val, y_pred)
-    f1 = f1_score(y_fold_val, y_pred)
-    auc_roc = roc_auc_score(y_fold_val, y_pred_proba)
-    
-    # Store metrics
-    fold_metrics["accuracy"].append(accuracy)
-    fold_metrics["precision"].append(precision)
-    fold_metrics["recall"].append(recall)
-    fold_metrics["f1"].append(f1)
-    fold_metrics["auc_roc"].append(auc_roc)
-    
-    # Print metrics for this fold
-    print(f"Best params: {grid_search.best_params_}")
-    print(f"Optimal threshold: {threshold:.2f}")
-    print(f"Accuracy: {accuracy:.4f}")
-    print(f"Precision: {precision:.4f}")
-    print(f"Recall: {recall:.4f}")
-    print(f"F1-Score: {f1:.4f}")
-    print(f"AUC-ROC: {auc_roc:.4f}")
-    
-    fold_num += 1
+        
+        # Apply SMOTE-R
+        X_fold_train, y_fold_train = apply_smote_r(X_fold_train, y_fold_train, conditions)
+        
+        # Grid search for this fold
+        base_model = RandomForestClassifier(random_state=42, n_jobs=-1)
+        grid_search = GridSearchCV(base_model, param_grid, cv=3, scoring="accuracy", n_jobs=-1)
+        grid_search.fit(X_fold_train, y_fold_train)
+        
+        model = grid_search.best_estimator_
+        best_models.append(model)
+        
+        # Find optimal threshold
+        y_fold_pred_proba = model.predict_proba(X_fold_val)[:, 1]
+        threshold = find_optimal_threshold(y_fold_val, y_fold_pred_proba)
+        
+        # Predict on validation fold with optimal threshold
+        y_pred = (y_fold_pred_proba >= threshold).astype(int)
+        y_pred_proba = y_fold_pred_proba
+        
+        # Calculate metrics
+        accuracy = accuracy_score(y_fold_val, y_pred)
+        precision = precision_score(y_fold_val, y_pred)
+        recall = recall_score(y_fold_val, y_pred)
+        f1 = f1_score(y_fold_val, y_pred)
+        auc_roc = roc_auc_score(y_fold_val, y_pred_proba)
+        
+        # Store metrics
+        fold_metrics["accuracy"].append(accuracy)
+        fold_metrics["precision"].append(precision)
+        fold_metrics["recall"].append(recall)
+        fold_metrics["f1"].append(f1)
+        fold_metrics["auc_roc"].append(auc_roc)
+        
+        # Print metrics for this fold
+        print(f"Best params: {grid_search.best_params_}")
+        print(f"Optimal threshold: {threshold:.2f}")
+        print(f"Accuracy: {accuracy:.4f}")
+        print(f"Precision: {precision:.4f}")
+        print(f"Recall: {recall:.4f}")
+        print(f"F1-Score: {f1:.4f}")
+        print(f"AUC-ROC: {auc_roc:.4f}")
+        
+        fold_num += 1
 
 # Calculate and print average metrics across folds
     print("\n--- Average Metrics Across Folds ---")
@@ -438,7 +438,7 @@ if __name__ == "__main__":
     y_val_pred_proba = final_model.predict_proba(X_val)[:, 1]
     optimal_threshold = find_optimal_threshold(y_val, y_val_pred_proba)
     print(f"Final optimal threshold: {optimal_threshold:.2f}")
-    joblib.dump(final_model,"classifier.pkl")
+    joblib.dump(final_model,"classifier_bal_1.pkl")
 
 # # Compute confusion matrix
 # cm = confusion_matrix(y_test, y_test_pred)

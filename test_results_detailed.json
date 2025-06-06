@@ -1,0 +1,263 @@
+{
+  "total": 32,
+  "passed": 30,
+  "failed": 2,
+  "test_details": [
+    {
+      "test_id": 1,
+      "description": "High engagement across all metrics",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 2,
+      "description": "Minimal activity - below all thresholds",
+      "status": "PASSED",
+      "expected": false,
+      "actual": false,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 3,
+      "description": "Highly social user with many messages and comments",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 4,
+      "description": "User completing multiple quizzes",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 5,
+      "description": "Content creator with many posts and upvotes",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 6,
+      "description": "User returning after a break",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 7,
+      "description": "User spending lots of karma",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 8,
+      "description": "Well-rounded contributor with balanced metrics",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 9,
+      "description": "Barely meets minimum requirements",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 10,
+      "description": "Just below all thresholds",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 11,
+      "description": "Login streak exactly at threshold",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 12,
+      "description": "Login streak just below threshold",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 13,
+      "description": "High upvotes with minimal other activity",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 14,
+      "description": "Many comments but no upvotes",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 15,
+      "description": "High karma spent but no other activity",
+      "status": "FAILED",
+      "expected": false,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 16,
+      "description": "Perfectly balanced engagement",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 17,
+      "description": "Long streak with minimal activity",
+      "status": "PASSED",
+      "expected": false,
+      "actual": false,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 18,
+      "description": "High karma earned but no other activity",
+      "status": "PASSED",
+      "expected": false,
+      "actual": false,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 19,
+      "description": "High activity but no karma spent",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 20,
+      "description": "High karma spent with minimal activity",
+      "status": "FAILED",
+      "expected": false,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 21,
+      "description": "Knowledge sharer with quizzes and karma",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 22,
+      "description": "Social connector with many messages",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 23,
+      "description": "Content creator with many posts",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 24,
+      "description": "Community supporter giving many upvotes",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 25,
+      "description": "New user's first day with good activity",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 26,
+      "description": "Completely inactive user",
+      "status": "PASSED",
+      "expected": false,
+      "actual": false,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 27,
+      "description": "User earning lots of karma",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 28,
+      "description": "Barely meets minimum requirements",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 30,
+      "description": "Perfect storm - all metrics at high values",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 21,
+      "description": "Knowledge sharer condition match",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 31,
+      "description": "Upper boundary values for all metrics",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    },
+    {
+      "test_id": 41,
+      "description": "New user with strong first day engagement",
+      "status": "PASSED",
+      "expected": true,
+      "actual": true,
+      "reward_details": "No reward"
+    }
+  ]
+}
