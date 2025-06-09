@@ -1,60 +1,288 @@
 {
   "reward_width": 40,
-  "karma_min": 5,
-  "karma_max": 30,
+  "reward_probability_threshold": 0.6,
+  "reward_rules": {
+    "streak": [
+      "login_streak >= 3",
+      "quizzes_completed >= 1"
+    ],
+    "engagement": [
+      "upvotes_received >= 10"
+    ],
+    "social": [
+      "buddies_messaged >= 3",
+      "karma_spent >= 15"
+    ],
+    "content_creator": [
+      "posts_created >= 2",
+      "upvotes_received >= 15"
+    ],
+    "quiz_master": [
+      "quizzes_completed >= 2"
+    ],
+    "comeback": [
+      "login_streak == 1",
+      "karma_earned_today >= 10"
+    ],
+    "quiz_completion": {
+      "conditions": [
+        "quizzes_completed > 0"
+      ],
+      "description": "Completed a quiz"
+    }
+  },
+  "box_types": {
+    "streak": {
+      "name": "Streak Box",
+      "base_karma": 10,
+      "rarity_weights": {
+        "common": 0.7,
+        "rare": 0.2,
+        "elite": 0.08,
+        "legendary": 0.02
+      }
+    },
+    "engagement": {
+      "name": "Engagement Box",
+      "base_karma": 15,
+      "rarity_weights": {
+        "common": 0.5,
+        "rare": 0.3,
+        "elite": 0.15,
+        "legendary": 0.05
+      }
+    },
+    "social": {
+      "name": "Social Box",
+      "base_karma": 12,
+      "rarity_weights": {
+        "common": 0.6,
+        "rare": 0.25,
+        "elite": 0.1,
+        "legendary": 0.05
+      }
+    },
+    "content_creator": {
+      "name": "Creator's Box",
+      "base_karma": 20,
+      "rarity_weights": {
+        "common": 0.4,
+        "rare": 0.35,
+        "elite": 0.15,
+        "legendary": 0.1
+      }
+    },
+    "quiz_master": {
+      "name": "Quiz Master Box",
+      "base_karma": 15,
+      "rarity_weights": {
+        "common": 0.6,
+        "rare": 0.25,
+        "elite": 0.1,
+        "legendary": 0.05
+      }
+    },
+    "comeback": {
+      "name": "Welcome Back Box",
+      "base_karma": 25,
+      "rarity_weights": {
+        "common": 0.3,
+        "rare": 0.4,
+        "elite": 0.2,
+        "legendary": 0.1
+      }
+    },
+    "mystery": {
+      "name": "Mystery Box",
+      "base_karma": 8,
+      "rarity_weights": {
+        "common": 0.8,
+        "rare": 0.15,
+        "elite": 0.04,
+        "legendary": 0.01
+      }
+    }
+  },
+  "karma_min": 20,
+  "karma_max": 2000,
   "metric_ranges": {
-    "login_streak": [0, 30],
-    "posts_created": [0, 10],
-    "comments_written": [0, 20],
-    "upvotes_received": [0, 100],
-    "quizzes_completed": [0, 5],
-    "buddies_messaged": [0, 30],
-    "karma_spent": [0, 50],
-    "karma_earned_today": [0, 100]
+    "login_streak": [
+      0,
+      30
+    ],
+    "posts_created": [
+      0,
+      10
+    ],
+    "comments_written": [
+      0,
+      20
+    ],
+    "upvotes_received": [
+      0,
+      100
+    ],
+    "quizzes_completed": [
+      0,
+      5
+    ],
+    "buddies_messaged": [
+      0,
+      30
+    ],
+    "karma_spent": [
+      0,
+      50
+    ],
+    "karma_earned_today": [
+      0,
+      100
+    ]
   },
   "user_clusters": {
     "Casual": {
-      "login_streak": [0.65, 2],
-      "posts_created": [0.35, 0.4],
-      "comments_written": [0.45, 1],
-      "upvotes_received": [0.25, 2],
-      "quizzes_completed": [0.2, 0.5],
-      "buddies_messaged": [0.35, 1],
-      "karma_spent": [0.3, 3],
-      "karma_earned_today": [0.4, 5]
+      "login_streak": [
+        0.65,
+        2
+      ],
+      "posts_created": [
+        0.35,
+        0.4
+      ],
+      "comments_written": [
+        0.45,
+        1
+      ],
+      "upvotes_received": [
+        0.25,
+        2
+      ],
+      "quizzes_completed": [
+        0.2,
+        0.5
+      ],
+      "buddies_messaged": [
+        0.35,
+        1
+      ],
+      "karma_spent": [
+        0.3,
+        3
+      ],
+      "karma_earned_today": [
+        0.4,
+        5
+      ]
     },
     "Social": {
-      "login_streak": [0.85, 10],
-      "posts_created": [0.6, 2],
-      "comments_written": [0.7, 5],
-      "upvotes_received": [0.5, 10],
-      "quizzes_completed": [0.3, 1],
-      "buddies_messaged": [0.8, 8],
-      "karma_spent": [0.6, 15],
-      "karma_earned_today": [0.6, 15]
+      "login_streak": [
+        0.85,
+        10
+      ],
+      "posts_created": [
+        0.6,
+        2
+      ],
+      "comments_written": [
+        0.7,
+        5
+      ],
+      "upvotes_received": [
+        0.5,
+        10
+      ],
+      "quizzes_completed": [
+        0.3,
+        1
+      ],
+      "buddies_messaged": [
+        0.8,
+        8
+      ],
+      "karma_spent": [
+        0.6,
+        15
+      ],
+      "karma_earned_today": [
+        0.6,
+        15
+      ]
     },
     "ContentCreator": {
-      "login_streak": [0.95, 15],
-      "posts_created": [0.85, 3],
-      "comments_written": [0.6, 4],
-      "upvotes_received": [0.75, 20],
-      "quizzes_completed": [0.4, 1],
-      "buddies_messaged": [0.5, 4],
-      "karma_spent": [0.5, 10],
-      "karma_earned_today": [0.75, 2]
+      "login_streak": [
+        0.95,
+        15
+      ],
+      "posts_created": [
+        0.85,
+        3
+      ],
+      "comments_written": [
+        0.6,
+        4
+      ],
+      "upvotes_received": [
+        0.75,
+        20
+      ],
+      "quizzes_completed": [
+        0.4,
+        1
+      ],
+      "buddies_messaged": [
+        0.5,
+        4
+      ],
+      "karma_spent": [
+        0.5,
+        10
+      ],
+      "karma_earned_today": [
+        0.75,
+        2
+      ]
     },
     "QuizEnthusiast": {
-      "login_streak": [0.8, 5],
-      "posts_created": [0.3, 0.5],
-      "comments_written": [0.4, 2],
-      "upvotes_received": [0.4, 5],
-      "quizzes_completed": [0.85, 3],
-      "buddies_messaged": [0.3, 2],
-      "karma_spent": [0.4, 5],
-      "karma_earned_today": [0.5, 10]
+      "login_streak": [
+        0.8,
+        5
+      ],
+      "posts_created": [
+        0.3,
+        0.5
+      ],
+      "comments_written": [
+        0.4,
+        2
+      ],
+      "upvotes_received": [
+        0.4,
+        5
+      ],
+      "quizzes_completed": [
+        0.85,
+        3
+      ],
+      "buddies_messaged": [
+        0.3,
+        2
+      ],
+      "karma_spent": [
+        0.4,
+        5
+      ],
+      "karma_earned_today": [
+        0.5,
+        10
+      ]
     }
   },
-  "cluster probs": [0.5, 0.167, 0.125, 0.208],
+  "cluster_probs": [
+    0.5,
+    0.167,
+    0.125,
+    0.208
+  ],
   "target_rarity_dist": {
     "common": 0.6,
     "rare": 0.25,
