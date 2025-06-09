@@ -39,23 +39,87 @@ class RewardEngine:
                 raise ValueError(f"Missing required config field: {field}")
         return config
     
-    def _evaluate_rule(self, rule_conditions, metrics):
-        """Evaluate if all conditions in a rule are met."""
-        if not isinstance(rule_conditions, list):
-            rule_conditions = [rule_conditions]
+    def _evaluate_rule(self, rule_data, metrics):
+        """
+        Evaluate if all conditions in a rule are met.
+        
+        Args:
+            rule_data: Either a list of conditions or a dict with 'conditions' key
+            metrics: User metrics to evaluate against
             
-        for condition in rule_conditions:
-            parsed_condition = parse_condition(condition)
-            if not check_condition(metrics, parsed_condition):
+        Returns:
+            bool: True if all conditions are met, False otherwise
+        """
+        # Handle both old list format and new dict format
+        if isinstance(rule_data, dict) and 'conditions' in rule_data:
+            conditions = rule_data['conditions']
+        elif isinstance(rule_data, list):
+            conditions = rule_data
+        else:
+            conditions = [rule_data]
+            
+        for condition in conditions:
+            try:
+                # Skip empty conditions
+                if not condition.strip():
+                    continue
+                    
+                # Handle complex conditions with parentheses
+                if '(' in condition and ')' in condition:
+                    # Use recursive parser for complex conditions
+                    parsed = parse_condition_recursive(condition)
+                    if not parsed:
+                        return False
+                else:
+                    # Simple condition
+                    parsed = parse_condition(condition)
+                    if not check_condition(metrics, parsed):
+                        return False
+            except Exception as e:
+                print(f"Error evaluating condition '{condition}': {str(e)}")
                 return False
+                
         return True
     
     def _determine_box_type(self, metrics):
-        """Determine the type of box based on user metrics and reward rules."""
-        for box_type, conditions in self.config['reward_rules'].items():
-            if self._evaluate_rule(conditions, metrics):
-                return box_type
-        return "mystery"  # Default box type if no rules match
+        """
+        Determine the type of box based on user metrics and reward rules.
+        
+        Args:
+            metrics: Dictionary of user metrics
+            
+        Returns:
+            str: The box type that best matches the user's metrics
+        """
+        matched_rules = []
+        
+        # First pass: find all matching rules
+        for rule_name, rule_data in self.config['reward_rules'].items():
+            if self._evaluate_rule(rule_data, metrics):
+                # Store the rule name and its priority (based on number of conditions)
+                conditions = rule_data.get('conditions', []) if isinstance(rule_data, dict) else rule_data
+                num_conditions = len(conditions) if isinstance(conditions, list) else 1
+                matched_rules.append((rule_name, num_conditions))
+        
+        # If no rules matched, return mystery box
+        if not matched_rules:
+            return "mystery"
+            
+        # Sort by number of conditions (more specific rules first)
+        matched_rules.sort(key=lambda x: x[1], reverse=True)
+        
+        # Get all rules with the highest number of conditions
+        max_conditions = matched_rules[0][1]
+        best_matches = [r for r in matched_rules if r[1] == max_conditions]
+        
+        # If there's a tie, choose randomly based on a deterministic seed
+        if len(best_matches) > 1:
+            seed_str = f"{metrics.get('user_id', '')}_{metrics.get('date', '')}"
+            seed = int(hashlib.md5(seed_str.encode()).hexdigest()[:8], 16)
+            random.seed(seed)
+            return random.choice(best_matches)[0]
+            
+        return best_matches[0][0]
     
     def _calculate_rarity(self, box_type, prediction_probability, seed=None):
         """Calculate the rarity of the reward based on probability and box type."""
@@ -192,10 +256,18 @@ class RewardEngine:
         try:
             # Generate deterministic seed for reproducibility
             seed = self._get_deterministic_seed(user_id, date)
+            np.random.seed(seed)
             random.seed(seed)
             
+            # Add user_id and date to metrics for rule evaluation
+            metrics_with_meta = daily_metrics.copy()
+            metrics_with_meta.update({
+                'user_id': user_id,
+                'date': date
+            })
+            
             # Check if user qualifies for any reward
-            box_type = self._determine_box_type(daily_metrics)
+            box_type = self._determine_box_type(metrics_with_meta)
             
             # Get prediction probability from model
             features = self._prepare_features(daily_metrics, date)

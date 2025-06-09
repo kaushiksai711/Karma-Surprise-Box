@@ -3,10 +3,16 @@ import json
 import os
 import tempfile
 import shutil
-from fastapi.testclient import TestClient
-from fastapi import status
-from main import app, CONFIG_FILE
+import sys
 from pathlib import Path
+from fastapi.testclient import TestClient
+from fastapi import status, HTTPException
+
+# Add the current directory to the Python path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Import the FastAPI app
+from main import app, CONFIG_FILE
 
 class TestRewardAPI(unittest.TestCase):
     @classmethod

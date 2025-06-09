@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List, Union
-from datetime import datetime
+from datetime import datetime, UTC
 import sys
 import os
 import json
@@ -189,6 +189,14 @@ async def check_surprise_box(request: RewardRequest):
     
     Returns reward details including qualification status, karma points, and box details.
     """
+    # Validate date format (YYYY-MM-DD)
+    try:
+        datetime.strptime(request.date, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid date format. Expected YYYY-MM-DD"
+        )
     try:
         # Convert daily_metrics to dict for the reward engine
         metrics_dict = request.daily_metrics.dict()
@@ -233,7 +241,7 @@ async def health_check():
     """Health check endpoint with system status"""
     return {
         "status": "ok",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "service": "Karma Reward Engine",
         "version": "1.0.0"
     }

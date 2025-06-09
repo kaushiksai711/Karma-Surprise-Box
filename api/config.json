@@ -2,28 +2,97 @@
   "reward_width": 40,
   "reward_probability_threshold": 0.6,
   "reward_rules": {
-    "streak": [
-      "login_streak >= 3",
-      "quizzes_completed >= 1"
-    ],
-    "engagement": [
-      "upvotes_received >= 10"
-    ],
-    "social": [
-      "buddies_messaged >= 3",
-      "karma_spent >= 15"
-    ],
-    "content_creator": [
-      "posts_created >= 2",
-      "upvotes_received >= 15"
-    ],
-    "quiz_master": [
-      "quizzes_completed >= 2"
-    ],
-    "comeback": [
-      "login_streak == 1",
-      "karma_earned_today >= 10"
-    ],
+    "streak_engager": {
+      "conditions": [
+        "login_streak >= 3",
+        "posts_created >= 1",
+        "quizzes_completed >= 1"
+      ],
+      "description": "Consistent engagement across multiple days"
+    },
+    "quiz_enthusiast": {
+      "conditions": [
+        "quizzes_completed >= 2",
+        "login_streak >= 2"
+      ],
+      "description": "Regular quiz participation"
+    },
+    "community_champion": {
+      "conditions": [
+        "posts_created >= 2",
+        "upvotes_received >= 12",
+        "buddies_messaged >= 2"
+      ],
+      "description": "High-quality content creator and community engager"
+    },
+    "knowledge_contributor": {
+      "conditions": [
+        "quizzes_completed >= 1",
+        "karma_earned_today >= 25"
+      ],
+      "description": "Active learner and knowledge sharer"
+    },
+    "social_butterfly": {
+      "conditions": [
+        "buddies_messaged >= 5",
+        "(posts_created >= 1 or comments_written >= 2)"
+      ],
+      "description": "Active in social interactions"
+    },
+    "balanced_contributor": {
+      "conditions": [
+        "posts_created >= 2",
+        "comments_written >= 2",
+        "buddies_messaged >= 2",
+        "karma_earned_today >= 15"
+      ],
+      "description": "Well-rounded community participation"
+    },
+    "karma_trader": {
+      "conditions": [
+        "karma_spent >= 15",
+        "karma_earned_today >= 20"
+      ],
+      "description": "Active in both giving and receiving karma"
+    },
+    "rising_star": {
+      "conditions": [
+        "upvotes_received >= 6",
+        "karma_earned_today >= 12",
+        "login_streak <= 5"
+      ],
+      "description": "New user showing great potential"
+    },
+    "creative_scholar": {
+      "conditions": [
+        "posts_created >= 1",
+        "quizzes_completed >= 1",
+        "upvotes_received >= 3"
+      ],
+      "description": "Combining creativity with knowledge"
+    },
+    "community_glue": {
+      "conditions": [
+        "buddies_messaged >= 4",
+        "karma_spent >= 8",
+        "login_streak >= 2"
+      ],
+      "description": "Holding the community together"
+    },
+    "active_supporter": {
+      "conditions": [
+        "login_streak >= 3",
+        "karma_earned_today >= 8"
+      ],
+      "description": "Consistent and supportive community member"
+    },
+    "mystery_enthusiast": {
+      "conditions": [
+        "quizzes_completed >= 1",
+        "(posts_created >= 1 or comments_written >= 2)"
+      ],
+      "description": "Enthusiastic participant in various activities"
+    },
     "quiz_completion": {
       "conditions": [
         "quizzes_completed > 0"
@@ -32,19 +101,9 @@
     }
   },
   "box_types": {
-    "streak": {
-      "name": "Streak Box",
-      "base_karma": 10,
-      "rarity_weights": {
-        "common": 0.7,
-        "rare": 0.2,
-        "elite": 0.08,
-        "legendary": 0.02
-      }
-    },
-    "engagement": {
-      "name": "Engagement Box",
-      "base_karma": 15,
+    "streak_engager": {
+      "name": "Streak Engager Box",
+      "base_karma": 18,
       "rarity_weights": {
         "common": 0.5,
         "rare": 0.3,
@@ -52,19 +111,29 @@
         "legendary": 0.05
       }
     },
-    "social": {
-      "name": "Social Box",
-      "base_karma": 12,
+    "quiz_enthusiast": {
+      "name": "Quiz Enthusiast Box",
+      "base_karma": 20,
       "rarity_weights": {
-        "common": 0.6,
-        "rare": 0.25,
+        "common": 0.55,
+        "rare": 0.3,
         "elite": 0.1,
         "legendary": 0.05
       }
     },
-    "content_creator": {
-      "name": "Creator's Box",
-      "base_karma": 20,
+    "community_champion": {
+      "name": "Community Champion Box",
+      "base_karma": 30,
+      "rarity_weights": {
+        "common": 0.3,
+        "rare": 0.35,
+        "elite": 0.25,
+        "legendary": 0.1
+      }
+    },
+    "knowledge_contributor": {
+      "name": "Knowledge Contributor Box",
+      "base_karma": 25,
       "rarity_weights": {
         "common": 0.4,
         "rare": 0.35,
@@ -72,8 +141,8 @@
         "legendary": 0.1
       }
     },
-    "quiz_master": {
-      "name": "Quiz Master Box",
+    "social_butterfly": {
+      "name": "Social Butterfly Box",
       "base_karma": 15,
       "rarity_weights": {
         "common": 0.6,
@@ -82,24 +151,84 @@
         "legendary": 0.05
       }
     },
-    "comeback": {
-      "name": "Welcome Back Box",
+    "balanced_contributor": {
+      "name": "Balanced Contributor Box",
+      "base_karma": 22,
+      "rarity_weights": {
+        "common": 0.45,
+        "rare": 0.3,
+        "elite": 0.15,
+        "legendary": 0.1
+      }
+    },
+    "karma_trader": {
+      "name": "Karma Trader Box",
+      "base_karma": 20,
+      "rarity_weights": {
+        "common": 0.5,
+        "rare": 0.3,
+        "elite": 0.15,
+        "legendary": 0.05
+      }
+    },
+    "rising_star": {
+      "name": "Rising Star Box",
       "base_karma": 25,
       "rarity_weights": {
-        "common": 0.3,
-        "rare": 0.4,
-        "elite": 0.2,
+        "common": 0.4,
+        "rare": 0.35,
+        "elite": 0.15,
         "legendary": 0.1
+      }
+    },
+    "creative_scholar": {
+      "name": "Creative Scholar Box",
+      "base_karma": 22,
+      "rarity_weights": {
+        "common": 0.45,
+        "rare": 0.3,
+        "elite": 0.15,
+        "legendary": 0.1
+      }
+    },
+    "community_glue": {
+      "name": "Community Glue Box",
+      "base_karma": 20,
+      "rarity_weights": {
+        "common": 0.5,
+        "rare": 0.3,
+        "elite": 0.15,
+        "legendary": 0.05
+      }
+    },
+    "active_supporter": {
+      "name": "Active Supporter Box",
+      "base_karma": 18,
+      "rarity_weights": {
+        "common": 0.6,
+        "rare": 0.25,
+        "elite": 0.1,
+        "legendary": 0.05
+      }
+    },
+    "mystery_enthusiast": {
+      "name": "Mystery Enthusiast Box",
+      "base_karma": 15,
+      "rarity_weights": {
+        "common": 0.65,
+        "rare": 0.2,
+        "elite": 0.1,
+        "legendary": 0.05
       }
     },
     "mystery": {
       "name": "Mystery Box",
-      "base_karma": 8,
+      "base_karma": 10,
       "rarity_weights": {
-        "common": 0.8,
-        "rare": 0.15,
-        "elite": 0.04,
-        "legendary": 0.01
+        "common": 0.7,
+        "rare": 0.2,
+        "elite": 0.08,
+        "legendary": 0.02
       }
     }
   },
