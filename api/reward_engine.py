@@ -6,9 +6,19 @@ import random
 from datetime import datetime
 import hashlib
 from typing import Dict, List, Tuple, Optional, Any, Union
+import re
 
-# Import feature engineering functions from common_functions.py
-from Classifier import parse_condition,parse_condition_recursive, check_condition, get_temporal_multiplier, load_conditions
+# Import feature engineering and condition evaluation functions from Classifier.py
+# from Classifier import (
+#     parse_condition,
+#     parse_condition_recursive,
+#     check_condition,
+#     get_temporal_multiplier,
+#     load_conditions,
+#     evaluate_expression
+# )
+#parsing functions
+
 
 # Load the feature names to ensure consistent ordering
 print("Loading feature names...")
@@ -27,6 +37,25 @@ class RewardEngine:
         self.config = self._load_config()
         # Define expected feature names (raw + rule-based + temporal)
         self.expected_feature_names = MODEL_FEATURE_KEYS + [f"rule_{i}" for i in range(len(self.conditions))] + ["temporal_multiplier"]
+        # Track rewarded users by date to prevent duplicate rewards
+        self.rewarded_users = {}  # Format: {date: set(user_ids)}
+        
+        # Map box types to their corresponding reasons
+        self.box_type_reasons = {
+            "streak_engager": "Consistent logins + content and quiz activity",
+            "quiz_enthusiast": "Frequent quizzes + regular logins",
+            "community_champion": "High-quality posts + community engagement",
+            "knowledge_contributor": "Active learning + high karma earned",
+            "social_butterfly": "Active messaging + content contributions",
+            "balanced_contributor": "Posts and comments + social and karma activity",
+            "karma_trader": "Karma spent + karma earned",
+            "rising_star": "New user + strong early engagement",
+            "creative_scholar": "Creative posts + quiz participation",
+            "community_glue": "Community messaging + karma sharing",
+            "active_supporter": "Consistent logins + karma contributions",
+            "mystery_enthusiast": "Quiz enthusiasm + content creation",
+            "quiz_completion": "Quiz completion + learning effort"
+        }
     
     def _load_config(self):
         """Load and validate the configuration."""
@@ -41,7 +70,7 @@ class RewardEngine:
     
     def _evaluate_rule(self, rule_data, metrics):
         """
-        Evaluate if all conditions in a rule are met.
+        Evaluate if all conditions in a rule are met using the imported functions from Classifier.py
         
         Args:
             rule_data: Either a list of conditions or a dict with 'conditions' key
@@ -61,26 +90,29 @@ class RewardEngine:
         for condition in conditions:
             try:
                 # Skip empty conditions
-                if not condition.strip():
+                if not condition or not str(condition).strip():
                     continue
                     
-                # Handle complex conditions with parentheses
-                if '(' in condition and ')' in condition:
-                    # Use recursive parser for complex conditions
-                    parsed = parse_condition_recursive(condition)
-                    if not parsed:
-                        return False
-                else:
-                    # Simple condition
-                    parsed = parse_condition(condition)
-                    if not check_condition(metrics, parsed):
-                        return False
+                # Parse the condition
+                parsed = parse_condition(condition)
+                if parsed is None:
+                    print(f"Failed to parse condition: {condition}")
+                    return False
+                    
+                # Evaluate the condition
+                if not check_condition(metrics, parsed):
+                    return False
+                    
             except Exception as e:
                 print(f"Error evaluating condition '{condition}': {str(e)}")
                 return False
                 
         return True
-    
+    def get_temporal_multiplier(self,day_of_week, month):
+        TEMPORAL_TRENDS = self.config["temporal_trends"]
+        base_mult = 1.2 if day_of_week in [5, 6] else 1.0
+        seasonal_mult = TEMPORAL_TRENDS.get("seasonal_multipliers", {}).get(str(month), 1.0)
+        return base_mult * seasonal_mult    
     def _determine_box_type(self, metrics):
         """
         Determine the type of box based on user metrics and reward rules.
@@ -149,9 +181,9 @@ class RewardEngine:
         # Apply rarity multiplier
         rarity_multipliers = {
             'common': 1.0,
-            'rare': 1.5,
-            'elite': 2.0,
-            'legendary': 3.0
+            'rare': 1.25,
+            'elite': 1.5,
+            'legendary': 2.0
         }
         
         # Apply activity bonus (0-50% based on overall activity)
@@ -189,7 +221,7 @@ class RewardEngine:
         
         # Add temporal feature
         day_dt = datetime.strptime(date, "%Y-%m-%d")
-        temporal_mult = get_temporal_multiplier(day_dt.weekday(), day_dt.month)
+        temporal_mult = self.get_temporal_multiplier(day_dt.weekday(), day_dt.month)
         X["temporal_multiplier"] = temporal_mult
         
         # Ensure correct column order and feature names
@@ -254,6 +286,15 @@ class RewardEngine:
             Dictionary containing reward details
         """
         try:
+            # Check if user already received a reward today
+            if date in self.rewarded_users and user_id in self.rewarded_users[date]:
+                return {
+                    "user_id": user_id,
+                    "surprise_unlocked": False,
+                    "status": "already_received",
+                    "reason": "User already received a reward today"
+                }
+                
             # Generate deterministic seed for reproducibility
             seed = self._get_deterministic_seed(user_id, date)
             np.random.seed(seed)
@@ -272,7 +313,7 @@ class RewardEngine:
             # Get prediction probability from model
             features = self._prepare_features(daily_metrics, date)
             prediction_probability = self.model.predict_proba(features)[0][1]
-            
+            print(prediction_probability,self.config['reward_probability_threshold'])
             # Check if probability meets threshold
             if prediction_probability < self.config['reward_probability_threshold']:
                 return {
@@ -289,6 +330,14 @@ class RewardEngine:
             # Get box display name
             box_name = self.config['box_types'].get(box_type, {}).get('name', 'Mystery Box')
             
+            # Add user to rewarded users for this date
+            if date not in self.rewarded_users:
+                self.rewarded_users[date] = set()
+            self.rewarded_users[date].add(user_id)
+            
+            # Get the reason based on box type, default to a generic message if not found
+            reason = self.box_type_reasons.get(box_type, "For your activity and engagement!")
+            
             return {
                 "user_id": user_id,
                 "surprise_unlocked": True,
@@ -297,7 +346,7 @@ class RewardEngine:
                 "box_name": box_name,
                 "rarity": rarity,
                 "status": "delivered",
-                "reason": f"Earned {rarity} {box_name} for your activity!"
+                "reason": reason
             }
             
         except Exception as e:
@@ -328,3 +377,116 @@ def load_model():
 def get_reward_engine():
     """Get or create the reward engine singleton."""
     return RewardEngine()
+def tokenize_condition(condition_str):
+    # Pattern to match variables, operators, parentheses, and logical operators
+    pattern = r'(\w+)|(>=|<=|==|!=|>|<)|(\(|\))|(and|or|not\b)|(\d+)'
+    # Find all matches and filter out empty groups
+    tokens = [''.join(match.groups('')).strip() for match in re.finditer(pattern, condition_str)]
+    # Filter out empty strings and ensure proper spacing around operators
+    result = []
+    for token in tokens:
+        if token.strip():
+            result.append(token.strip())
+    return result
+
+def parse_atomic_condition(tokens, start_idx):
+    if start_idx + 2 >= len(tokens):
+        return None, start_idx
+    var_token = tokens[start_idx]
+    op_token = tokens[start_idx + 1]
+    val_token = tokens[start_idx + 2]
+    if (var_token in MODEL_FEATURE_KEYS and 
+        op_token in ['>=', '<=', '==', '<', '>'] and 
+        val_token.isdigit()):
+        return (var_token, op_token, int(val_token)), start_idx + 3
+    return None, start_idx
+
+def parse_condition_recursive(tokens, start_idx=0):
+    left_expr, idx = parse_term(tokens, start_idx)
+    while idx < len(tokens):
+        if tokens[idx] == 'or':
+            right_expr, idx = parse_condition_recursive(tokens, idx + 1)
+            left_expr = ('or', left_expr, right_expr)
+        else:
+            break
+    return left_expr, idx
+
+def parse_term(tokens, start_idx):
+    left_expr, idx = parse_factor(tokens, start_idx)
+    while idx < len(tokens) and tokens[idx] == 'and':
+        right_expr, idx = parse_factor(tokens, idx + 1)
+        left_expr = ('and', left_expr, right_expr)
+    return left_expr, idx
+
+def parse_factor(tokens, start_idx):
+    if start_idx >= len(tokens):
+        raise ValueError("Unexpected end of expression")
+    if tokens[start_idx] == '(':
+        expr, idx = parse_condition_recursive(tokens, start_idx + 1)
+        if idx >= len(tokens) or tokens[idx] != ')':
+            raise ValueError("Missing closing parenthesis")
+        return expr, idx + 1
+    else:
+        atomic, idx = parse_atomic_condition(tokens, start_idx)
+        if atomic is None:
+            raise ValueError(f"Invalid atomic condition at position {start_idx}: {tokens[start_idx:start_idx+3]}")
+        return atomic, idx
+
+def parse_condition(condition_str):
+    if not condition_str.strip():
+        return None
+    tokens = tokenize_condition(condition_str)
+    if not tokens:
+        return None
+    try:
+        expr, _ = parse_condition_recursive(tokens)
+        return expr
+    except Exception as e:
+        print(f"Error parsing condition '{condition_str}': {e}")
+        return None
+
+def evaluate_expression(expr, metrics):
+    if isinstance(expr, tuple) and len(expr) == 3:
+        if expr[0] in MODEL_FEATURE_KEYS:
+            variable, operator, value = expr
+            metric_value = metrics.get(variable, 0)
+            if operator == '>=':
+                return metric_value >= value
+            elif operator == '<=':
+                return metric_value <= value
+            elif operator == '==':
+                return metric_value == value
+            elif operator == '<':
+                return metric_value < value
+            elif operator == '>':
+                return metric_value > value
+            else:
+                raise ValueError(f"Unknown operator: {operator}")
+        elif expr[0] == 'and':
+            _, left, right = expr
+            return evaluate_expression(left, metrics) and evaluate_expression(right, metrics)
+        elif expr[0] == 'or':
+            _, left, right = expr
+            return evaluate_expression(left, metrics) or evaluate_expression(right, metrics)
+    raise ValueError(f"Invalid expression: {expr}")
+
+def check_condition(metrics, parsed_condition):
+    if parsed_condition is None:
+        return False
+    try:
+        return evaluate_expression(parsed_condition, metrics)
+    except Exception as e:
+        print(f"Error evaluating condition: {e}")
+        return False
+def load_conditions():
+        conditions = []
+        with open("conditions.csv", "r") as csvfile:
+            reader = pd.read_csv(csvfile)
+            for _, row in reader.iterrows():
+                parsed_condition = parse_condition(row["condition"])
+                if parsed_condition is None:
+                    print(f"Warning: Could not parse condition: '{row['condition']}'")
+                row_dict = row.to_dict()
+                row_dict["parsed_condition"] = parsed_condition
+                conditions.append(row_dict)
+        return [c for c in conditions if c["parsed_condition"] is not None]

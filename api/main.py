@@ -252,149 +252,149 @@ async def version_info():
     return {
         "version": "1.0.0",
         "model_version": "1.0",
-        "last_updated": "2023-01-01T00:00:00Z"
+        "last_updated": "2025-06-20T00:00:00Z"
     }
 
-# Configuration Management Endpoints
-@app.get("/config", response_model=ConfigResponse)
-async def get_config():
-    """Get the current configuration."""
-    try:
-        return load_config()
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to load configuration: {str(e)}"
-        )
+# # Configuration Management Endpoints
+# @app.get("/config", response_model=ConfigResponse)
+# async def get_config():
+#     """Get the current configuration."""
+#     try:
+#         return load_config()
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Failed to load configuration: {str(e)}"
+#         )
 
-@app.patch("/config", response_model=ConfigResponse)
-async def update_config(update: ConfigUpdate, reward_engine: RewardEngine = Depends(get_reward_engine_dependency)):
-    """Update the configuration."""
-    try:
-        # Load current config
-        config = load_config()
+# @app.patch("/config", response_model=ConfigResponse)
+# async def update_config(update: ConfigUpdate, reward_engine: RewardEngine = Depends(get_reward_engine_dependency)):
+#     """Update the configuration."""
+#     try:
+#         # Load current config
+#         config = load_config()
         
-        # Update only the provided fields
-        update_dict = update.dict(exclude_unset=True)
+#         # Update only the provided fields
+#         update_dict = update.dict(exclude_unset=True)
         
-        # Handle reward_rules update
-        if 'reward_rules' in update_dict:
-            if not isinstance(update_dict['reward_rules'], dict):
-                raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="reward_rules must be a dictionary"
-                )
-            config['reward_rules'] = update_dict['reward_rules']
+#         # Handle reward_rules update
+#         if 'reward_rules' in update_dict:
+#             if not isinstance(update_dict['reward_rules'], dict):
+#                 raise HTTPException(
+#                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+#                     detail="reward_rules must be a dictionary"
+#                 )
+#             config['reward_rules'] = update_dict['reward_rules']
         
-        # Handle box_types update
-        if 'box_types' in update_dict:
-            if not isinstance(update_dict['box_types'], dict):
-                raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="box_types must be a dictionary"
-                )
-            config['box_types'] = update_dict['box_types']
+#         # Handle box_types update
+#         if 'box_types' in update_dict:
+#             if not isinstance(update_dict['box_types'], dict):
+#                 raise HTTPException(
+#                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+#                     detail="box_types must be a dictionary"
+#                 )
+#             config['box_types'] = update_dict['box_types']
         
-        # Update simple fields
-        for field in ['reward_probability_threshold', 'karma_min', 'karma_max']:
-            if field in update_dict:
-                config[field] = update_dict[field]
+#         # Update simple fields
+#         for field in ['reward_probability_threshold', 'karma_min', 'karma_max']:
+#             if field in update_dict:
+#                 config[field] = update_dict[field]
         
-        # Save the updated config
-        save_config(config)
+#         # Save the updated config
+#         save_config(config)
         
-        # Reload the reward engine configuration
-        reward_engine.config = reward_engine._load_config()
+#         # Reload the reward engine configuration
+#         reward_engine.config = reward_engine._load_config()
         
-        return config
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update configuration: {str(e)}"
-        )
+#         return config
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Failed to update configuration: {str(e)}"
+#         )
 
-@app.get("/rules", response_model=Dict[str, Any])
-async def list_rules():
-    """List all reward rules."""
-    try:
-        config = load_config()
-        return {"rules": config.get('reward_rules', {})}
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list rules: {str(e)}"
-        )
+# @app.get("/rules", response_model=Dict[str, Any])
+# async def list_rules():
+#     """List all reward rules."""
+#     try:
+#         config = load_config()
+#         return {"rules": config.get('reward_rules', {})}
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Failed to list rules: {str(e)}"
+#         )
 
-@app.post("/rules/{rule_name}", status_code=status.HTTP_201_CREATED)
-async def add_or_update_rule(
-    rule_name: str, 
-    rule: Union[RewardRule, List[str], str],
-    reward_engine: RewardEngine = Depends(get_reward_engine_dependency)
-):
-    """Add or update a reward rule."""
-    try:
-        config = load_config()
+# @app.post("/rules/{rule_name}", status_code=status.HTTP_201_CREATED)
+# async def add_or_update_rule(
+#     rule_name: str, 
+#     rule: Union[RewardRule, List[str], str],
+#     reward_engine: RewardEngine = Depends(get_reward_engine_dependency)
+# ):
+#     """Add or update a reward rule."""
+#     try:
+#         config = load_config()
         
-        # Initialize reward_rules if it doesn't exist
-        if 'reward_rules' not in config:
-            config['reward_rules'] = {}
+#         # Initialize reward_rules if it doesn't exist
+#         if 'reward_rules' not in config:
+#             config['reward_rules'] = {}
         
-        # Convert rule to the correct format
-        if isinstance(rule, str):
-            rule_data = {"conditions": [rule]}
-        elif isinstance(rule, list):
-            rule_data = {"conditions": rule}
-        else:
-            rule_data = rule.dict(exclude_unset=True)
+#         # Convert rule to the correct format
+#         if isinstance(rule, str):
+#             rule_data = {"conditions": [rule]}
+#         elif isinstance(rule, list):
+#             rule_data = {"conditions": rule}
+#         else:
+#             rule_data = rule.dict(exclude_unset=True)
         
-        # Update or add the rule
-        config['reward_rules'][rule_name] = rule_data
-        save_config(config)
+#         # Update or add the rule
+#         config['reward_rules'][rule_name] = rule_data
+#         save_config(config)
         
-        # Reload the reward engine configuration
-        reward_engine.config = reward_engine._load_config()
+#         # Reload the reward engine configuration
+#         reward_engine.config = reward_engine._load_config()
         
-        return {"status": "success", "rule": rule_data}
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update rule: {str(e)}"
-        )
+#         return {"status": "success", "rule": rule_data}
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Failed to update rule: {str(e)}"
+#         )
 
-@app.delete("/rules/{rule_name}")
-async def delete_rule(
-    rule_name: str,
-    reward_engine: RewardEngine = Depends(get_reward_engine_dependency)
-):
-    """Delete a reward rule."""
-    try:
-        config = load_config()
+# @app.delete("/rules/{rule_name}")
+# async def delete_rule(
+#     rule_name: str,
+#     reward_engine: RewardEngine = Depends(get_reward_engine_dependency)
+# ):
+#     """Delete a reward rule."""
+#     try:
+#         config = load_config()
         
-        if 'reward_rules' not in config or rule_name not in config['reward_rules']:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Rule '{rule_name}' not found"
-            )
+#         if 'reward_rules' not in config or rule_name not in config['reward_rules']:
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail=f"Rule '{rule_name}' not found"
+#             )
         
-        # Remove the rule
-        del config['reward_rules'][rule_name]
-        save_config(config)
+#         # Remove the rule
+#         del config['reward_rules'][rule_name]
+#         save_config(config)
         
-        # Reload the reward engine configuration
-        reward_engine.config = reward_engine._load_config()
+#         # Reload the reward engine configuration
+#         reward_engine.config = reward_engine._load_config()
         
-        return {"status": "success", "message": f"Rule '{rule_name}' deleted"}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete rule: {str(e)}"
-        )
+#         return {"status": "success", "message": f"Rule '{rule_name}' deleted"}
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Failed to delete rule: {str(e)}"
+#         )
 
 if __name__ == "__main__":
     import uvicorn
