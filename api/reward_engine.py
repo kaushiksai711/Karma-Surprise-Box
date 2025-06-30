@@ -37,8 +37,9 @@ class RewardEngine:
         self.config = self._load_config()
         # Define expected feature names (raw + rule-based + temporal)
         self.expected_feature_names = MODEL_FEATURE_KEYS + [f"rule_{i}" for i in range(len(self.conditions))] + ["temporal_multiplier"]
-        # Track rewarded users by date to prevent duplicate rewards
-        self.rewarded_users = {}  # Format: {date: set(user_ids)}
+        # Initialize database manager for tracking rewarded users
+        from db_manager import DatabaseManager
+        self.db_manager = DatabaseManager()
         
         # Map box types to their corresponding reasons
         self.box_type_reasons = {
@@ -286,15 +287,6 @@ class RewardEngine:
             Dictionary containing reward details
         """
         try:
-            # Check if user already received a reward today
-            if date in self.rewarded_users and user_id in self.rewarded_users[date]:
-                return {
-                    "user_id": user_id,
-                    "surprise_unlocked": False,
-                    "status": "already_received",
-                    "reason": "User already received a reward today"
-                }
-                
             # Generate deterministic seed for reproducibility
             seed = self._get_deterministic_seed(user_id, date)
             np.random.seed(seed)
@@ -310,10 +302,20 @@ class RewardEngine:
             # Check if user qualifies for any reward
             box_type = self._determine_box_type(metrics_with_meta)
             
+            # Check if user was already rewarded today for this box type
+            today = date
+            if self.db_manager.is_user_rewarded(today, user_id, box_type):
+                return {
+                    "user_id": user_id,
+                    "surprise_unlocked": False,
+                    "status": "already_received",
+                    "reason": f"User already received a {box_type} reward today"
+                }
+            
             # Get prediction probability from model
             features = self._prepare_features(daily_metrics, date)
             prediction_probability = self.model.predict_proba(features)[0][1]
-            print(prediction_probability,self.config['reward_probability_threshold'])
+            
             # Check if probability meets threshold
             if prediction_probability < self.config['reward_probability_threshold']:
                 return {
@@ -322,7 +324,7 @@ class RewardEngine:
                     "status": "missed",
                     "reason": "Activity level below reward threshold"
                 }
-            
+            print(prediction_probability ,self.config['reward_probability_threshold'])
             # Determine reward details
             rarity = self._calculate_rarity(box_type, prediction_probability, seed)
             reward_karma = self._calculate_reward_karma(box_type, rarity, daily_metrics)
@@ -330,10 +332,8 @@ class RewardEngine:
             # Get box display name
             box_name = self.config['box_types'].get(box_type, {}).get('name', 'Mystery Box')
             
-            # Add user to rewarded users for this date
-            if date not in self.rewarded_users:
-                self.rewarded_users[date] = set()
-            self.rewarded_users[date].add(user_id)
+            # Add to rewarded users in database
+            self.db_manager.add_rewarded_user(today, user_id, box_type)
             
             # Get the reason based on box type, default to a generic message if not found
             reason = self.box_type_reasons.get(box_type, "For your activity and engagement!")
@@ -361,9 +361,9 @@ class RewardEngine:
 def load_model():
     """Load the trained classifier model."""
     try:
-        with open('classifier_bal_1.pkl', 'rb') as f:
+        with open('compressed_classifier_bal_1.pkl', 'rb') as f:
             model = joblib.load(f)
-            print('model loaded')
+            print('model loaded,comaomd')
         return model
     # try:
     #     with open('classifier.pkl', 'rb') as f:

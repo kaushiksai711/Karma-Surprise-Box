@@ -1,0 +1,28 @@
+condition,label,reward_score,reason,display_reason,box_type,rarity,probability
+"login_streak >= 3 and posts_created >= 1 and quizzes_completed >= 1",1,12,Engagement streak,You're on a roll with consistent activity!,streak,common,0.95
+"quizzes_completed >= 2 and login_streak >= 2",1,15,Consistent quiz taker,You're acing those quizzes!,streak,common,0.85
+"upvotes_received >= 10",1,18,High upvotes,Your posts are loved by the community!,engagement,rare,0.98
+"comments_written >= 8 and posts_created <= 2",1,14,Active commenter,Your comments spark great discussions!,engagement,common,0.80
+"karma_spent >= 25",1,22,Social generosity,You're spreading good vibes!,social,legendary,0.65
+"comments_written >= 5 and upvotes_received >= 4",1,13,Helpful hand,Your helpful comments shine!,social,common,0.85
+"buddies_messaged >= 5 and (posts_created >= 1 or comments_written >= 2)",1,12,Social connector,You're building strong connections!,social,common,0.75
+"posts_created >= 2 and upvotes_received >= 12 and buddies_messaged >= 2",1,28,Platform evangelist,You're a community superstar!,community_hero,legendary,0.95
+"quizzes_completed >= 1 and karma_earned_today >= 25",1,20,Knowledge sharer,Your knowledge inspires others!,knowledge_expert,rare,0.95
+"login_streak == 1 and (posts_created >= 1 or quizzes_completed >= 1 or comments_written >= 2 and karma_earned_today >= 5)",1,15,Comeback user,Welcome back with a bang!,comeback,rare,0.98
+"login_streak >= 2 and posts_created <= 1 and comments_written <= 2 and quizzes_completed <= 1 and (karma_earned_today >= 5 or buddies_messaged >= 1)",1,5,Daily dabbler,You're active every day!,mystery,common,0.43
+"posts_created >= 5 and upvotes_received <= 2",0,0,Spammy behavior,No reward for low-impact posts,none,none,1.0
+"login_streak <= 1 and posts_created == 0 and comments_written == 0 and quizzes_completed == 0 and buddies_messaged == 0 and karma_earned_today < 5",0,0,Very low activity,Get more active to earn rewards!,none,none,1.0
+"karma_spent >= 25 and karma_earned_today <= 8 and posts_created == 0 and comments_written <= 2",0,0,Karma leech,Engage more to earn rewards!,none,none,1.0
+"login_streak >= 8 and posts_created == 0 and comments_written == 0 and quizzes_completed == 0 and buddies_messaged == 0 and karma_earned_today == 0 and upvotes_received == 0 and karma_spent == 0",0,0,Login only,Join the fun with more activity!,none,none,0.95
+"posts_created >= 2 and comments_written >= 2 and buddies_messaged >= 2 and karma_earned_today >= 15",1,20,Balanced contributor,You're a well-rounded contributor!,community,rare,0.90
+"karma_spent >= 15 and karma_earned_today >= 20",1,25,Karma trader,Great balance of giving and earning!,exchange,elite,0.80
+"upvotes_received >= 6 and karma_earned_today >= 12 and login_streak <= 5",1,14,Rising star,You're making waves!,spotlight,common,0.90
+"buddies_messaged >= 2 and comments_written >= 2 and upvotes_received >= 5",1,16,Social influencer,You're the life of the community!,SocialConnector,rare,0.90
+"quizzes_completed >= 1 and (posts_created >= 1 or comments_written >= 2)",1,12,Mystery enthusiast,Your enthusiasm unlocks surprises!,mystery,common,0.90
+"login_streak >= 4 and karma_spent >= 10 and quizzes_completed >= 1",1,14,Engaged learner,Your dedication is inspiring!,learning,common,0.95
+"posts_created >= 1 and upvotes_received >= 3 and login_streak <= 3",1,13,Newcomer glow,You're off to a great start!,newcomer,rare,0.95
+"comments_written >= 4 and karma_earned_today <= 5",0,0,Low-impact comments,Add more value to earn rewards!,none,none,1.0
+"login_streak >= 3 and karma_earned_today >= 8",1,12,Active supporter,Your support fuels the community!,supporter,common,0.85
+"posts_created >= 1 and quizzes_completed >= 1 and upvotes_received >= 3",1,18,Creative scholar,Your creativity and knowledge shine!,scholar,elite,0.85
+"buddies_messaged >= 4 and karma_spent >= 8 and login_streak >= 2",1,15,Community glue,You're holding the community together!,glue,rare,0.85
+"login_streak >= 3 and upvotes_received >= 10",1,15,Engagement streak + high upvotes,You're killing it with streak and engagement!,mystery,rare,0.95

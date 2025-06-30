@@ -1,0 +1,1670 @@
+{
+  "total": 48,
+  "passed": 47,
+  "failed": 1,
+  "test_details": [
+    {
+      "test_id": 1,
+      "description": "High engagement across all metrics",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "streak_engager",
+          "balanced_contributor",
+          "community_champion"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1001",
+        "surprise_unlocked": true,
+        "reward_karma": 25,
+        "box_type": "balanced_contributor",
+        "box_name": "Balanced Contributor Box",
+        "rarity": "elite",
+        "status": "delivered",
+        "reason": "Posts and comments + social and karma activity"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1001",
+        "surprise_unlocked": true,
+        "reward_karma": 25,
+        "box_type": "balanced_contributor",
+        "box_name": "Balanced Contributor Box",
+        "rarity": "elite",
+        "status": "delivered",
+        "reason": "Posts and comments + social and karma activity"
+      }
+    },
+    {
+      "test_id": 2,
+      "description": "Minimal activity - below all thresholds",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1002",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1002",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 3,
+      "description": "Highly social user with many messages and comments",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "community_glue"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1003",
+        "surprise_unlocked": true,
+        "reward_karma": 12,
+        "box_type": "social_butterfly",
+        "box_name": "Social Butterfly Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "Active messaging + content contributions"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1003",
+        "surprise_unlocked": true,
+        "reward_karma": 12,
+        "box_type": "social_butterfly",
+        "box_name": "Social Butterfly Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "Active messaging + content contributions"
+      }
+    },
+    {
+      "test_id": 4,
+      "description": "User completing multiple quizzes",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "quiz_enthusiast",
+          "knowledge_contributor"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1004",
+        "surprise_unlocked": true,
+        "reward_karma": 20,
+        "box_type": "knowledge_contributor",
+        "box_name": "Knowledge Contributor Box",
+        "rarity": "elite",
+        "status": "delivered",
+        "reason": "Active learning + high karma earned"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1004",
+        "surprise_unlocked": true,
+        "reward_karma": 20,
+        "box_type": "knowledge_contributor",
+        "box_name": "Knowledge Contributor Box",
+        "rarity": "elite",
+        "status": "delivered",
+        "reason": "Active learning + high karma earned"
+      }
+    },
+    {
+      "test_id": 5,
+      "description": "Content creator with many posts and upvotes",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "streak_engager"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1005",
+        "surprise_unlocked": true,
+        "reward_karma": 13,
+        "box_type": "active_supporter",
+        "box_name": "Active Supporter Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "Consistent logins + karma contributions"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1005",
+        "surprise_unlocked": true,
+        "reward_karma": 13,
+        "box_type": "active_supporter",
+        "box_name": "Active Supporter Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "Consistent logins + karma contributions"
+      }
+    },
+    {
+      "test_id": 6,
+      "description": "User returning after a break",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "creative_scholar",
+          "rising_star"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1006",
+        "surprise_unlocked": true,
+        "reward_karma": 15,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1006",
+        "surprise_unlocked": true,
+        "reward_karma": 15,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      }
+    },
+    {
+      "test_id": 7,
+      "description": "User with balanced karma activity",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "active_supporter"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1007",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "karma_trader",
+        "box_name": "Karma Trader Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "Karma spent + karma earned"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1007",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "karma_trader",
+        "box_name": "Karma Trader Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "Karma spent + karma earned"
+      }
+    },
+    {
+      "test_id": 8,
+      "description": "Well-rounded contributor with balanced metrics",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "balanced_contributor",
+          "creative_scholar"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1008",
+        "surprise_unlocked": true,
+        "reward_karma": 15,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1008",
+        "surprise_unlocked": true,
+        "reward_karma": 15,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      }
+    },
+    {
+      "test_id": 9,
+      "description": "Barely meets minimum requirements",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "mystery"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1009",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1009",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      }
+    },
+    {
+      "test_id": 10,
+      "description": "Just below all thresholds",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1010",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1010",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 11,
+      "description": "Login streak exactly at threshold (3 days)",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "creative_scholar",
+          "rising_star"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_10110",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_10110",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      }
+    },
+    {
+      "test_id": 12,
+      "description": "Login streak just below threshold",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "rising_star"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1012",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1012",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      }
+    },
+    {
+      "test_id": 13,
+      "description": "High upvotes with minimal other activity",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1013",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1013",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 14,
+      "description": "Many comments but no upvotes",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1014",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1014",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 15,
+      "description": "High karma spent but no other activity",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1015",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1015",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 16,
+      "description": "Perfectly balanced engagement",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "streak_engager"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1016",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1016",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      }
+    },
+    {
+      "test_id": 17,
+      "description": "Long streak with minimal activity",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1017",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1017",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 18,
+      "description": "High karma earned but no other activity",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1018",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1018",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 19,
+      "description": "High activity but no karma spent",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "balanced_contributor",
+          "creative_scholar"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1019",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1019",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      }
+    },
+    {
+      "test_id": 20,
+      "description": "High karma spent with minimal activity",
+      "status": "FAILED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1020",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      },
+      "error": "Test 20: Incorrect surprise_unlocked. Expected False, got True; Test 20: reward_karma should be None, got 10; Test 20: rarity should be None, got common; Test 20: Incorrect status. Expected missed, got delivered",
+      "reward_details": {
+        "user_id": "user_1020",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      }
+    },
+    {
+      "test_id": 21,
+      "description": "Streak engager condition match",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "streak_engager"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1021",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1021",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      }
+    },
+    {
+      "test_id": 22,
+      "description": "Quiz enthusiast condition match",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "quiz_completion"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1022",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "quiz_completion",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "Quiz completion + learning effort"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1022",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "quiz_completion",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "Quiz completion + learning effort"
+      }
+    },
+    {
+      "test_id": 23,
+      "description": "Community champion condition match",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "community_champion"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1023",
+        "surprise_unlocked": true,
+        "reward_karma": 12,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1023",
+        "surprise_unlocked": true,
+        "reward_karma": 12,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      }
+    },
+    {
+      "test_id": 24,
+      "description": "Spammy behavior - no reward",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1024",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1024",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 25,
+      "description": "Very low activity - no reward",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1025",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1025",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 26,
+      "description": "Social influencer condition match",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "mystery",
+          "social_butterfly",
+          "quiz_completion"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1026",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1026",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      }
+    },
+    {
+      "test_id": 27,
+      "description": "Creative scholar condition match",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "creative_scholar"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1027",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1027",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      }
+    },
+    {
+      "test_id": 28,
+      "description": "Community glue condition match",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "community_glue"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1028",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1028",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      }
+    },
+    {
+      "test_id": 29,
+      "description": "Active supporter condition match",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "active_supporter"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1029",
+        "surprise_unlocked": true,
+        "reward_karma": 12,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1029",
+        "surprise_unlocked": true,
+        "reward_karma": 12,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      }
+    },
+    {
+      "test_id": 30,
+      "description": "Mystery enthusiast condition match",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "mystery_enthusiast",
+          "quiz_enthusiast",
+          "quiz_completion"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1030",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1030",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      }
+    },
+    {
+      "test_id": 31,
+      "description": "Upper boundary values for all metrics",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "community_champion",
+          "balanced_contributor"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1031",
+        "surprise_unlocked": true,
+        "reward_karma": 48,
+        "box_type": "mystery_enthusiast",
+        "box_name": "Mystery Enthusiast Box",
+        "rarity": "legendary",
+        "status": "delivered",
+        "reason": "Quiz enthusiasm + content creation"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1031",
+        "surprise_unlocked": true,
+        "reward_karma": 48,
+        "box_type": "mystery_enthusiast",
+        "box_name": "Mystery Enthusiast Box",
+        "rarity": "legendary",
+        "status": "delivered",
+        "reason": "Quiz enthusiasm + content creation"
+      }
+    },
+    {
+      "test_id": 32,
+      "description": "Minimum values for all metrics",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1032",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1032",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 33,
+      "description": "Just above karma_spent threshold",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1033",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1033",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 34,
+      "description": "Just below karma_spent threshold",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1034",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1034",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 35,
+      "description": "Maximum login streak",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1035",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1035",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 36,
+      "description": "Maximum upvotes received",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "creative_scholar",
+          "mystery_enthusiast",
+          "mystery"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1036",
+        "surprise_unlocked": true,
+        "reward_karma": 35,
+        "box_type": "balanced_contributor",
+        "box_name": "Balanced Contributor Box",
+        "rarity": "legendary",
+        "status": "delivered",
+        "reason": "Posts and comments + social and karma activity"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1036",
+        "surprise_unlocked": true,
+        "reward_karma": 35,
+        "box_type": "balanced_contributor",
+        "box_name": "Balanced Contributor Box",
+        "rarity": "legendary",
+        "status": "delivered",
+        "reason": "Posts and comments + social and karma activity"
+      }
+    },
+    {
+      "test_id": 37,
+      "description": "Just above quizzes completed threshold",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "quiz_enthusiast"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1037",
+        "surprise_unlocked": true,
+        "reward_karma": 12,
+        "box_type": "quiz_completion",
+        "box_name": "Mystery Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "Quiz completion + learning effort"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1037",
+        "surprise_unlocked": true,
+        "reward_karma": 12,
+        "box_type": "quiz_completion",
+        "box_name": "Mystery Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "Quiz completion + learning effort"
+      }
+    },
+    {
+      "test_id": 38,
+      "description": "Just below quizzes completed threshold",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1038",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1038",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 39,
+      "description": "Maximum buddies messaged",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1039",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1039",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 40,
+      "description": "Just above comments written threshold",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1040",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1040",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 41,
+      "description": "New user with strong first day engagement",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "creative_scholar"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1041",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1041",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      }
+    },
+    {
+      "test_id": 42,
+      "description": "Rising star with high upvotes and karma",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "rising_star"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1042",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1042",
+        "surprise_unlocked": true,
+        "reward_karma": 10,
+        "box_type": "mystery",
+        "box_name": "Mystery Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "For your activity and engagement!"
+      }
+    },
+    {
+      "test_id": 44,
+      "description": "Same input repeatedly for same user_id and date",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "rising_star",
+          "creative_scholar"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1044",
+        "surprise_unlocked": true,
+        "reward_karma": 15,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1044",
+        "surprise_unlocked": true,
+        "reward_karma": 15,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "common",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      }
+    },
+    {
+      "test_id": 45,
+      "description": "Test temporal multiplier on a weekend",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "rising_star"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1045",
+        "surprise_unlocked": true,
+        "reward_karma": 31,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "legendary",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1045",
+        "surprise_unlocked": true,
+        "reward_karma": 31,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "legendary",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      }
+    },
+    {
+      "test_id": 46,
+      "description": "Test temporal multiplier in December",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": true,
+        "reward_karma": "<function <lambda>>",
+        "rarity": [
+          "common",
+          "rare",
+          "elite",
+          "legendary"
+        ],
+        "box_type": [
+          "creative_scholar"
+        ],
+        "status": "delivered"
+      },
+      "actual": {
+        "user_id": "user_1046",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1046",
+        "surprise_unlocked": true,
+        "reward_karma": 19,
+        "box_type": "rising_star",
+        "box_name": "Rising Star Box",
+        "rarity": "rare",
+        "status": "delivered",
+        "reason": "New user + strong early engagement"
+      }
+    },
+    {
+      "test_id": 47,
+      "description": "Invalid date format",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Error processing request: time data '2025-13-01' does not match format '%Y-%m-%d'",
+        "rarity": null,
+        "box_type": null,
+        "status": "error"
+      },
+      "actual": {
+        "user_id": "user_1047",
+        "surprise_unlocked": false,
+        "status": "error",
+        "reason": "Error processing request: time data '2025-13-01' does not match format '%Y-%m-%d'"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1047",
+        "surprise_unlocked": false,
+        "status": "error",
+        "reason": "Error processing request: time data '2025-13-01' does not match format '%Y-%m-%d'"
+      }
+    },
+    {
+      "test_id": 49,
+      "description": "Negative metric values",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1049",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1049",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    },
+    {
+      "test_id": 50,
+      "description": "Edge case near reward probability threshold",
+      "status": "PASSED",
+      "expected": {
+        "surprise_unlocked": false,
+        "reward_karma": null,
+        "reason": "Activity level below reward threshold",
+        "rarity": null,
+        "box_type": null,
+        "status": "missed"
+      },
+      "actual": {
+        "user_id": "user_1050",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      },
+      "error": "",
+      "reward_details": {
+        "user_id": "user_1050",
+        "surprise_unlocked": false,
+        "status": "missed",
+        "reason": "Activity level below reward threshold"
+      }
+    }
+  ]
+}
